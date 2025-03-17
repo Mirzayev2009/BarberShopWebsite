@@ -1,0 +1,38 @@
+import * as React from "react";
+import { useState } from "react";
+import { DayPicker } from "react-day-picker";
+
+import "react-day-picker/dist/style.css";
+
+function MyDatePicker() {
+  const [selected, setSelected] = useState(new Date()); // Default to today's date
+  const today = new Date(); // Get today's date
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-8 h-full">
+      <DayPicker
+        mode="single"
+        className="text-xl"
+        selected={selected}
+        onSelect={setSelected}
+        modifiers={{ today }} // ✅ Tell DayPicker which date is "today"
+        footer={
+          selected
+            ? `Tanlangan kun: ${new Intl.DateTimeFormat("uz-UZ").format(selected)}`
+            : "Kunni tanlang"
+        }
+        classNames={{
+          months: "flex flex-col gap-4",
+          caption: "text-xl font-bold text-center",
+          head_cell: "text-gray-500 text-lg",
+          cell: "p-4 rounded-lg hover:bg-gray-200 transition",
+          selected: "bg-black text-white rounded-full",
+          today: "bg-yellow-400 text-black font-bold border-2 border-yellow-600 rounded-lg", // ✅ Now correctly applied
+        }}
+      />
+    </div>
+  );
+}
+
+export { MyDatePicker };
+
