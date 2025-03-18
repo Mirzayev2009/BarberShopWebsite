@@ -48,9 +48,14 @@ const API_DATA = [
   }
 ];
 
-const HaircutList = () => {
+const HaircutList = ({ setChoosenHaircut }) => {
   const [haircuts, setHaircuts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // ✅ Corrected Function Syntax
+  const handleHaircutSelection = (haircut) => {
+    setChoosenHaircut(haircut);
+  };
 
   useEffect(() => {
     // Simulating API call delay
@@ -73,11 +78,11 @@ const HaircutList = () => {
         placeholder="Qidiring..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full max-w-lg p-2 mb-4  rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+        className="w-full max-w-lg p-2 mb-4 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500"
       />
 
       {/* Haircuts List */}
-      <div className="w-full  flex flex-wrap justify-center gap-6">
+      <div className="w-full flex flex-wrap justify-center gap-6">
         {filteredHaircuts.length > 0 ? (
           filteredHaircuts.map((haircut) => (
             <div
@@ -94,9 +99,10 @@ const HaircutList = () => {
                 <img
                   src={haircut.imageUrl || "https://via.placeholder.com/400x150"}
                   alt={haircut.name}
-                  className="w-full h-full object-cover  hover:scale-105 transition-transform"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform"
                 />
               </div>
+
               <div className="p-4">
                 <p className="text-sm text-gray-600">{haircut.description}</p>
                 <p className="text-2xl font-semibold mt-2">{haircut.price} ₽</p>
@@ -110,8 +116,11 @@ const HaircutList = () => {
 
               {/* Action Button */}
               <div className="px-6 pb-6">
-                <button className="w-full bg-amber-600 text-white py-2 rounded-lg hover:bg-blue-600 transition">
-                  Soch-turmakni  tanlang
+                <button
+                  onClick={() => handleHaircutSelection(haircut)} // ✅ Fixed Click Handler
+                  className="w-full bg-amber-600 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+                >
+                  Soch-turmakni tanlang
                 </button>
               </div>
             </div>
