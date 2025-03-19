@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 const timeSlots = {
   Kunduzi: ["12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"],
@@ -12,7 +13,13 @@ function TimePicker({ setChoosenTime }) {
   const handleTimeSelection = (time) => {
     setSelectedTime(time);
     setChoosenTime(time);
+    setTimeout(() => {
+      toast.success(`Vaqt ${time}`);
+    }, 10); // Small delay ensures correct state update
   };
+  
+  console.log(selectedTime);
+  
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-8">
@@ -20,15 +27,17 @@ function TimePicker({ setChoosenTime }) {
       {Object.entries(timeSlots).map(([period, times]) => (
         <div key={period} className="mb-4 w-full text-xl">
           <h3 className="text-lg font-medium mb-2">{period}</h3>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3"> 
             {times.map((time) => (
               <button
                 key={time}
-                onClick={() => handleTimeSelection(time)}
                 className={`p-3 text-xl rounded-lg transition ${
                   selectedTime === time ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-gray-300"
                 }`}
-              >
+                onClick={() => 
+                  { toast.success(`Vaqt ${time}`);                  
+                 handleTimeSelection(time) ; 
+                 }} >
                 {time}
               </button>
             ))}

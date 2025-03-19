@@ -5,6 +5,7 @@ import ChoosingBarber from "./ChoosingBareber/ChoosingBarber";
 import ChoosingHaircut from "./ChoosingHaircut/ChoosingHaircut";
 import ChoosingDate from "./ChoosingDate/ChoosingDate";
 import { DatabaseProvider } from "./Database"; // Import provider
+import FillingInfo from "./FillingInfoPage/FillingInfo";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           <Route path="/choosingbarber" element={<ChoosingBarber />} />
           <Route path="/choosingdate" element={<ChoosingDate />} />
           <Route path="/choosinghaircut" element={<ChoosingHaircut />} />
+          <Route path="/fillinginfopage" element = {<FillingInfo/>} />
         </Routes>
       </Router>
     </DatabaseProvider>

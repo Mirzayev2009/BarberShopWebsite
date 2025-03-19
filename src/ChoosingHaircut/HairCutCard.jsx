@@ -1,4 +1,7 @@
+import { SonnerDemo } from "@/components/Sonner";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const API_DATA = [
   {
@@ -51,6 +54,7 @@ const API_DATA = [
 const HaircutList = ({ setChoosenHaircut }) => {
   const [haircuts, setHaircuts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate()
 
   // ✅ Corrected Function Syntax
   const handleHaircutSelection = (haircut) => {
@@ -117,12 +121,20 @@ const HaircutList = ({ setChoosenHaircut }) => {
               {/* Action Button */}
               <div className="px-6 pb-6">
                 <button
-                  onClick={() => handleHaircutSelection(haircut)} // ✅ Fixed Click Handler
-                  className="w-full bg-amber-600 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-                >
+                  onClick={() => {handleHaircutSelection(haircut);
+                    navigate("/fillinginfopage");
+                    toast.success(`Sartarosh tanlandi    Ana endi aniq vaqtni tanlang`, {
+                      action: {
+                        label: "Tanlash",
+                        onClick: () => navigate("/fillinginfopage"), // Navigate when toast is clicked
+                      },
+                    });
+                  }} // ✅ Fixed Click Handler
+                  className="w-full bg-amber-600 text-white py-2 rounded-lg hover:bg-blue-600 transition" >
                   Soch-turmakni tanlang
                 </button>
               </div>
+                  <SonnerDemo/>
             </div>
           ))
         ) : (
