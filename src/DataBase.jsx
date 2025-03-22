@@ -7,10 +7,13 @@ export const DatabaseProvider = ({ children }) => {
   const [selectedHaircut, setSelectedHaircut] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [personalInfo, setPersonalInfo] = useState(null)
  console.log(selectedDate);
  console.log(selectedTime);
  console.log(selectedHaircut);
  console.log(selectedBarber);
+ console.log(personalInfo);
+ 
  
  
  
@@ -26,6 +29,8 @@ export const DatabaseProvider = ({ children }) => {
         setSelectedDate,
         selectedTime,
         setSelectedTime,
+        personalInfo,
+        setPersonalInfo
       }}
     >
       {children}
