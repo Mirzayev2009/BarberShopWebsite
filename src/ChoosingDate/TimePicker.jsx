@@ -27,7 +27,7 @@ function TimePicker({ setChoosenTime }) {
       {Object.entries(timeSlots).map(([period, times]) => (
         <div key={period} className="mb-4 w-full text-xl">
           <h3 className="text-lg font-medium mb-2">{period}</h3>
-          <div className="grid grid-cols-3 gap-3"> 
+          <div className="grid grid-cols-3 gap-3 "  > 
             {times.map((time) => (
               <button
                 key={time}

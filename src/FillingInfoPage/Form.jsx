@@ -14,16 +14,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  phone: z.string().min(10, { message: "Phone number is invalid." }),
-  email: z.string().email({ message: "Invalid email address." }),
-  promocode: z.string().optional(),
-  terms: z.boolean().refine((val) => val === true, {
-    message: "You must accept the terms.",
-  }),
+  name: z.string().min(5, { message: "Ism kamida 5 ta harfdan iborat bo'lishi kerak" }),
+  phone: z.string().min(13, { message: "Telefon raqamni to'liq kiriting" }),
+  email: z.string().email({ message: "Emailni kiriting" })
+
 });
 
 export function PersonalInfoForm() {
@@ -44,7 +41,7 @@ export function PersonalInfoForm() {
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Personal Information</h2>
+      <h2 className="text-3xl font-bold mb-4">Shaxsiy ma'lumotlar</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 
@@ -53,9 +50,9 @@ export function PersonalInfoForm() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your name" {...field} />
+                <FormLabel>Ism </FormLabel>
+                <FormControl >
+                  <Input placeholder="Ismimgizni kiriting" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -67,9 +64,9 @@ export function PersonalInfoForm() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone *</FormLabel>
+                <FormLabel>Telefon raqam </FormLabel>
                 <FormControl>
-                  <Input placeholder="+7 555 555-55-55" {...field} />
+                  <Input placeholder="+998 99 999 99 99" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,45 +80,15 @@ export function PersonalInfoForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="example@gmail.com" {...field} />
+                  <Input placeholder="misoluchun@gmail.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <FormField
-            control={form.control}
-            name="promocode"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Promocode</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter promocode (optional)" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="terms"
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-2">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel>I agree to the terms and conditions</FormLabel>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit" className="w-full">
+           <Textarea/>
+ 
+          <Button type="submit" className="w-full bg-amber-600">
             Submit
           </Button>
         </form>

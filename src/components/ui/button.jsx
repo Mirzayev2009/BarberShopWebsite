@@ -36,7 +36,7 @@ const buttonVariants = cva(
 )
 
 function Button({
-  className,
+  className = "hover:bg-blue-500",
   variant,
   size,
   asChild = false,
