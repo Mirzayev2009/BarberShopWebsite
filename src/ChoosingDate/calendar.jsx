@@ -4,7 +4,10 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 function MyDatePicker({ setChoosenDay }) {
-  const [selected, setSelected] = useState(new Date()); // Default to today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Ensure no time component affects comparison
+  
+  const [selected, setSelected] = useState(null); // Default to today
 
   // ✅ Update chosen day when user selects a date
   useEffect(() => {
@@ -18,6 +21,7 @@ function MyDatePicker({ setChoosenDay }) {
         className="text-xl"
         selected={selected}
         onSelect={setSelected}
+        disabled={{ before: today }} // Disable past dates
         footer={selected ? `Tanlangan kun: ${new Intl.DateTimeFormat("uz-UZ").format(selected)}` : "Kunni tanlang"}
         classNames={{
           months: "flex flex-col gap-4",

@@ -1,8 +1,13 @@
 import React from 'react'
+import BookingConfirmation from './BookingConfirmation'
+import Nav from '@/Nav'
 
 const FinalPage = () => {
   return (
-    <div></div>
+    <div>
+      <Nav/>
+      <BookingConfirmation/>
+     </div>
   )
 }
 

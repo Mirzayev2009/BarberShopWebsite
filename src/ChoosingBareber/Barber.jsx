@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const BarberCard = ({ barber, handleBarberSelection }) => {
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
 
   return (
-    <div className="w-[500px] p-8 mt-28 bg-white shadow-lg rounded-2xl text-center transition-transform transform hover:scale-105 hover:shadow-2xl duration-300">
+    <div className="w-[500px] p-8 mt-28 bg-white shadow-lg rounded-2xl text-center transition-transform transform hover:scale-[1.02] hover:shadow-2xl duration-300">
       {/* Image Section */}
       <div className="w-full h-52 flex justify-center">
         <img
@@ -26,7 +26,7 @@ const BarberCard = ({ barber, handleBarberSelection }) => {
           {barber.times.map((time, index) => (
             <span
               key={index}
-              className="bg-amber-500 text-white px-5 py-2 rounded-lg text-lg transition-all duration-300 hover:bg-blue-700 hover:scale-105"
+              className="bg-amber-500 text-white px-5 py-2 rounded-lg text-lg transition-all duration-300 hover:bg-blue-700 hover:scale-105 cursor-pointer"
             >
               {time}
             </span>
@@ -61,34 +61,29 @@ const BarberCard = ({ barber, handleBarberSelection }) => {
 
         {/* Selection Button */}
         <button
-          className="text-2xl"
+          className="text-4xl text-gray-700 hover:text-blue-600 transition-colors"
           onClick={() => {
             handleBarberSelection(barber);
-            toast.success(`Sartarosh tanlandi: ${barber.name}    Ana endi aniq vaqtni tanlang`, {
+            toast.success(`Sartarosh tanlandi: ${barber.name}. Endi vaqtni tanlang.`, {
               action: {
                 label: "Tanlash",
-                onClick: () => navigate("/choosingdate"), // Navigate when toast is clicked
+                onClick: () => navigate("/choosingdate"),
               },
             });
           }}
         >
-          <i className="bx bx-radio-circle text-6xl"></i>
+          <i className="bx bx-check-circle text-6xl"></i>
         </button>
       </div>
     </div>
   );
 };
 
-
 const BarberList = ({ barbers, setChoosenBarber }) => {
-  const handleBarberSelection = (barber) => {
-    setChoosenBarber(barber);
-  };
-
   return (
     <div className="flex flex-wrap justify-center gap-8 p-8">
       {barbers.map((barber, index) => (
-        <BarberCard key={index} barber={barber} handleBarberSelection={handleBarberSelection} />
+        <BarberCard key={index} barber={barber} handleBarberSelection={setChoosenBarber} />
       ))}
     </div>
   );
@@ -98,8 +93,7 @@ const Barber = ({ setChoosenBarber }) => {
   const barbersData = [
     {
       name: "Aslbek Abdullayev",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvi7HpQ-_PMSMOFrj1hwjp6LDcI-jm3Ro0Xw&s",
+      image: "https://example.com/barber1.jpg",
       reviews: 45,
       times: ["10:00", "11:30", "14:00", "15:30"],
       contact: "+998 91 234 56 78",
@@ -107,39 +101,37 @@ const Barber = ({ setChoosenBarber }) => {
       socials: [
         {
           name: "Instagram",
-          link: "https://instagram.com",
+          link: "https://instagram.com/aslbek_abdullayev",
           icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
         },
       ],
     },
     {
       name: "Axmadjon Orziqulov",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvi7HpQ-_PMSMOFrj1hwjp6LDcI-jm3Ro0Xw&s",
+      image: "https://example.com/barber2.jpg",
       reviews: 30,
-      times: ["9:00", "12:30", "15:00", "14:30", "17:00"],
+      times: ["09:00", "12:30", "14:30", "15:00", "17:00"],
       contact: "+998 99 876 54 32",
       social_contact: "axmadjon_orziqulov",
       socials: [
         {
           name: "Instagram",
-          link: "https://instagram.com",
+          link: "https://instagram.com/axmadjon_orziqulov",
           icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
         },
       ],
     },
     {
       name: "Shohrux Hamraqulov",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvi7HpQ-_PMSMOFrj1hwjp6LDcI-jm3Ro0Xw&s",
+      image: "https://example.com/barber3.jpg",
       reviews: 25,
-      times: ["8:00", "1:30", "4:00"],
+      times: ["08:00", "10:30", "16:00"],
       contact: "+998 94 532 24 56",
       social_contact: "shohrux_hamraqulov",
       socials: [
         {
           name: "Instagram",
-          link: "https://instagram.com",
+          link: "https://instagram.com/shohrux_hamraqulov",
           icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
         },
       ],
@@ -150,4 +142,7 @@ const Barber = ({ setChoosenBarber }) => {
 };
 
 export default Barber;
+
+
+;
 
