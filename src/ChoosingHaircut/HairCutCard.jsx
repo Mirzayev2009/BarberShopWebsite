@@ -54,12 +54,7 @@ const API_DATA = [
 const HaircutList = ({ setChoosenHaircut }) => {
   const [haircuts, setHaircuts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate()
-
-  // ✅ Corrected Function Syntax
-  const handleHaircutSelection = (haircut) => {
-    setChoosenHaircut(haircut);
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Simulating API call delay
@@ -73,6 +68,17 @@ const HaircutList = ({ setChoosenHaircut }) => {
     haircut.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     haircut.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleHaircutSelection = (haircut) => {
+    setChoosenHaircut(haircut);
+    navigate("/fillinginfopage");
+    toast.success(`Soch turmagi tanlandi. Endi vaqtni tanlang`, {
+      action: {
+        label: "Tanlash",
+        onClick: () => navigate("/fillinginfopage"),
+      },
+    });
+  };
 
   return (
     <div className="w-full flex flex-col items-center p-4">
@@ -107,6 +113,7 @@ const HaircutList = ({ setChoosenHaircut }) => {
                 />
               </div>
 
+              {/* Description & Price */}
               <div className="p-4">
                 <p className="text-sm text-gray-600">{haircut.description}</p>
                 <p className="text-2xl font-semibold mt-2">{haircut.price} ₽</p>
@@ -121,28 +128,24 @@ const HaircutList = ({ setChoosenHaircut }) => {
               {/* Action Button */}
               <div className="px-6 pb-6">
                 <button
-                  onClick={() => {handleHaircutSelection(haircut);
-                    navigate("/fillinginfopage");
-                    toast.success(`Sartarosh tanlandi    Ana endi aniq vaqtni tanlang`, {
-                      action: {
-                        label: "Tanlash",
-                        onClick: () => navigate("/fillinginfopage"), // Navigate when toast is clicked
-                      },
-                    });
-                  }} // ✅ Fixed Click Handler
-                  className="w-full bg-amber-600 text-white py-2 rounded-lg hover:bg-blue-600 transition" >
+                  onClick={() => handleHaircutSelection(haircut)}
+                  className="w-full bg-amber-600 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+                >
                   Soch-turmakni tanlang
                 </button>
               </div>
-                  <SonnerDemo/>
             </div>
           ))
         ) : (
           <p className="text-center text-gray-500">Mos keluvchi natijalar topilmadi.</p>
         )}
       </div>
+
+      {/* ✅ Moved SonnerDemo outside of .map() loop */}
+      <SonnerDemo />
     </div>
   );
 };
 
 export default HaircutList;
+

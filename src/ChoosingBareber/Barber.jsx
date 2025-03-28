@@ -144,5 +144,5 @@ const Barber = ({ setChoosenBarber }) => {
 export default Barber;
 
 
-;
+
 

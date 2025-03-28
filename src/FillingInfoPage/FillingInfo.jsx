@@ -11,7 +11,7 @@ const FillingInfo = () => {
 
   return (
     <div>
-      <Nav />
+      {/* <Nav /> */}
       <div>
         <Info
           selectedBarber={selectedBarber}

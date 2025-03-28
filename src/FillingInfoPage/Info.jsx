@@ -1,59 +1,85 @@
-import React from "react";
-import { Avatar } from "@/components/ui/avatar";
-import { Calendar, Clock, Scissors, DollarSign, Hourglass } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
-const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut }) => {
-  return (
-    <div className="w-full bg-white py-6 px-4 mt-24 h-full ">
-      <div className="w-full flex flex-col md:flex-row items-center justify-between bg-white p-6 rounded-lg shadow-md space-y-6 md:space-y-0">
-        {/* Barber Info */}
-        <div className="flex items-center space-x-4 flex-1 w-full md:w-auto">
-          <Avatar className="w-16 h-16">
-            <img
-              src={selectedBarber?.image || "https://via.placeholder.com/150"}
-              alt={selectedBarber?.name || "Sartarosh"}
-              className="rounded-full"
-            />
-          </Avatar>
-          <div>
-            <h2 className="text-lg font-semibold">{selectedBarber?.name || "Sartarosh tanlanmagan"}</h2>
-            <p className="text-gray-500">{selectedBarber?.contact || "Kontakt mavjud emas"}</p>
-          </div>
+export default function Info({ selectedBarber, selectedDate, selectedTime, selectedHaircut, onUpdate }) {
+    const [date, setDate] = useState(selectedDate);
+    const [time, setTime] = useState(selectedTime);
+    const [haircut, setHaircut] = useState(selectedHaircut?.name || "");
+    const [price, setPrice] = useState(selectedHaircut?.price || "");
+    const [duration, setDuration] = useState(selectedHaircut?.duration || "");
+    const availableTimes = selectedBarber?.times || [];
+    const availableHaircuts = selectedBarber?.haircuts || [];
+
+    useEffect(() => {
+        if (haircut) {
+            const selected = availableHaircuts.find(h => h.name === haircut);
+            if (selected) {
+                setPrice(selected.price);
+                setDuration(selected.duration);
+            }
+        }
+    }, [haircut, availableHaircuts]);
+
+    useEffect(() => {
+        if (!availableTimes.includes(time)) {
+            setTime("");
+        }
+    }, [availableTimes]);
+
+    return (
+        <div className="flex flex-col gap-6 p-6 rounded-2xl shadow-lg bg-white">
+            <div className="flex flex-wrap gap-6">
+                <div className="flex flex-col w-full sm:w-1/2">
+                    <Label>Date</Label>
+                    <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                </div>
+                <div className="flex flex-col w-full sm:w-1/2">
+                    <Label>Available Times</Label>
+                    <Select value={time} onValueChange={setTime}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select Time" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableTimes.map((t, index) => (
+                                <SelectItem key={index} value={t}>{t}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            <div className="flex flex-wrap gap-6">
+                <div className="flex flex-col w-full sm:w-1/2">
+                    <Label>Haircut</Label>
+                    <Select value={haircut} onValueChange={setHaircut}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select Haircut" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableHaircuts.map((h, index) => (
+                                <SelectItem key={index} value={h.name}>{h.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="flex flex-col w-full sm:w-1/2">
+                    <Label>Price</Label>
+                    <Input type="text" value={price} disabled />
+                </div>
+                <div className="flex flex-col w-full sm:w-1/2">
+                    <Label>Duration</Label>
+                    <Input type="text" value={duration} disabled />
+                </div>
+            </div>
+
+            <Button className="self-end mt-4" onClick={() => onUpdate({ date, time, haircut, price, duration })}>
+                Update Booking
+            </Button>
         </div>
+    );
+}
 
-        {/* Appointment Details */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:flex items-center space-y-4 sm:space-y-0 sm:space-x-6 flex-1 justify-center w-full">
-          <div className="flex items-center space-x-2">
-            <Calendar className="w-7 h-7 text-blue-500" />
-            <p className="text-lg font-medium">
-              {selectedDate ? selectedDate.toLocaleDateString() : "Sana tanlanmagan"}
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Clock className="w-7 h-7 text-green-500" />
-            <p className="text-lg font-medium">{selectedTime || "Vaqt tanlanmagan"}</p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Scissors className="w-7 h-7 text-red-500" />
-            <p className="text-lg font-medium">{selectedHaircut?.name || "Soch turmagi tanlanmagan"}</p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <DollarSign className="w-7 h-7 text-yellow-500" />
-            <p className="text-lg font-medium">{selectedHaircut?.price ? `$${selectedHaircut.price}` : "Narx mavjud emas"}</p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Hourglass className="w-7 h-7 text-purple-500" />
-            <p className="text-lg font-medium">{selectedHaircut?.duration ? `${selectedHaircut.duration} min` : "Davomiylik mavjud emas"}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Info;
-
+   
