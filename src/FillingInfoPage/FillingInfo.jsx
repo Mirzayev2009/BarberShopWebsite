@@ -1,13 +1,19 @@
 import { DatabaseContext } from '@/DataBase'
 import Nav from '@/Nav'
-import  Info from './Info'
+import Info from './Info'
 import React, { useContext } from 'react'
 import PersonalInfoForm from './Form';
 
 const FillingInfo = () => {
-  const { selectedTime, selectedDate, selectedBarber, selectedHaircut } = useContext(DatabaseContext);
+  const { selectedTime, selectedDate, selectedBarber, selectedHaircut, setSelectedTime, setSelectedDate } = useContext(DatabaseContext);
 
   console.log("selectedBarber:", selectedBarber); // ✅ Check if this has a value
+
+  const handleUpdate = (updatedData) => {
+    if (updatedData.selectedTime !== undefined) setSelectedTime(updatedData.selectedTime);
+    if (updatedData.selectedDate !== undefined) setSelectedDate(updatedData.selectedDate);
+    // If you want to handle other updates, add them here.
+  };
 
   return (
     <div>
@@ -18,6 +24,7 @@ const FillingInfo = () => {
           selectedDate={selectedDate}
           selectedHaircut={selectedHaircut}
           selectedTime={selectedTime}
+          onUpdate={handleUpdate}  // ✅ Passing onUpdate prop
         />
       </div>
       <div><PersonalInfoForm/></div>
@@ -25,4 +32,4 @@ const FillingInfo = () => {
   );
 };
 
-export default FillingInfo
+export default FillingInfo;

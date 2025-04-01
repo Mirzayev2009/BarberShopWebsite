@@ -3,26 +3,25 @@ import { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
-function MyDatePicker({ setChoosenDay }) {
+function MyDatePicker({ setChoosenDay, initialDate = null }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Ensure no time component affects comparison
-  
-  const [selected, setSelected] = useState(null); // Default to today
+
+  const [selected, setSelected] = useState(initialDate || today); // Default to today
 
   // ✅ Update chosen day when user selects a date
   useEffect(() => {
-    setChoosenDay(selected);
+    if (selected) setChoosenDay(selected); // Only update if a date is selected
   }, [selected, setChoosenDay]);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-8 h-full">
       <DayPicker
         mode="single"
-        className="text-xl"
         selected={selected}
         onSelect={setSelected}
         disabled={{ before: today }} // Disable past dates
-        footer={selected ? `Tanlangan kun: ${new Intl.DateTimeFormat("uz-UZ").format(selected)}` : "Kunni tanlang"}
+        footer={selected ? `Tanlangan kun: ${selected.toLocaleDateString("uz-UZ")}` : "Kunni tanlang"}
         classNames={{
           months: "flex flex-col gap-4",
           caption: "text-xl font-bold text-center",
@@ -37,5 +36,6 @@ function MyDatePicker({ setChoosenDay }) {
 }
 
 export { MyDatePicker };
+
 
 

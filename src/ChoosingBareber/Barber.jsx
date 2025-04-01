@@ -95,7 +95,7 @@ const Barber = ({ setChoosenBarber }) => {
       name: "Aslbek Abdullayev",
       image: "https://example.com/barber1.jpg",
       reviews: 45,
-      times: ["10:00", "11:30", "14:00", "15:30"],
+      times: ["10:00", "11:30", "14:00", "15:30",  "16:30", "17:00", "17:30"],
       contact: "+998 91 234 56 78",
       social_contact: "aslbek_abdullayev",
       socials: [
@@ -125,7 +125,7 @@ const Barber = ({ setChoosenBarber }) => {
       name: "Shohrux Hamraqulov",
       image: "https://example.com/barber3.jpg",
       reviews: 25,
-      times: ["08:00", "10:30", "16:00"],
+      times: ["08:00", "10:30", "16:00",  "16:30", "17:00", "17:30"],
       contact: "+998 94 532 24 56",
       social_contact: "shohrux_hamraqulov",
       socials: [

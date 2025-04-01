@@ -3,6 +3,7 @@ import BookingConfirmation from './BookingConfirmation'
 import Nav from '@/Nav'
 
 const FinalPage = () => {
+  
   return (
     <div>
       <Nav/>

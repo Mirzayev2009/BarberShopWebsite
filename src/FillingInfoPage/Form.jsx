@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +24,6 @@ const formSchema = z.object({
   comment: z.string().min(10, { message: "Izoh kamida 10 ta harf bo'lishi kerak" }).optional(),
 });
 
-
 export function PersonalInfoForm() {
   const navigate = useNavigate();
   const form = useForm({
@@ -33,21 +32,24 @@ export function PersonalInfoForm() {
       name: "",
       phone: "",
       email: "",
+      comment: "",
     },
   });
-  const {setPersonalInfo} = useContext(DatabaseContext)
+
+  const { setPersonalInfo } = useContext(DatabaseContext);
 
   const onSubmit = (data) => {
     console.log("Form Submitted:", data);
-    setPersonalInfo(data)
-    navigate("/finalpage"); // Redirect after successful form submission
+    setPersonalInfo(data);
+    navigate("/finalpage"); 
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4">Shaxsiy ma'lumotlar</h2>
+    <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-lg">
+      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Shaxsiy Ma'lumotlar</h2>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Name */}
           <FormField
             control={form.control}
             name="name"
@@ -62,6 +64,7 @@ export function PersonalInfoForm() {
             )}
           />
 
+          {/* Phone */}
           <FormField
             control={form.control}
             name="phone"
@@ -76,6 +79,7 @@ export function PersonalInfoForm() {
             )}
           />
 
+          {/* Email */}
           <FormField
             control={form.control}
             name="email"
@@ -90,23 +94,24 @@ export function PersonalInfoForm() {
             )}
           />
 
+          {/* Comment */}
           <FormField
             control={form.control}
-            name="comment"  // This should match your form schema
+            name="comment"
             render={({ field }) => (
-             <FormItem>
-              <FormLabel>Izoh</FormLabel>
-              <FormControl>
-                <Textarea {...field} placeholder="Fikr-mulohaza yozing" />
-             </FormControl>
-             <FormMessage />
-           </FormItem>
-          )}
-        />
+              <FormItem>
+                <FormLabel>Izoh</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Fikr-mulohaza yozing" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-
-          <Button type="submit" className="w-full bg-amber-600">
-            Submit
+          {/* Submit Button */}
+          <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700 text-white text-lg">
+            Yuborish
           </Button>
         </form>
       </Form>
@@ -115,4 +120,3 @@ export function PersonalInfoForm() {
 }
 
 export default PersonalInfoForm;
-
