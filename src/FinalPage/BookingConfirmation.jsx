@@ -1,9 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Star, User, MapPin, Phone, Globe } from "lucide-react";
 import { DatabaseContext } from "../DataBase";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker"; // For date selection (you can install this package)
+import "react-datepicker/dist/react-datepicker.css"; // Import CSS for the datepicker
 
 const BookingConfirmation = () => {
   const {
@@ -14,19 +16,77 @@ const BookingConfirmation = () => {
     setSelectedBarber,
     setSelectedHaircut,
     setSelectedTime,
-    setSelectedDate
+    setSelectedDate,
+    setCancellationReason,
+    setPersonalInfo,
+    personalInfo // Accessing personalInfo from context
   } = useContext(DatabaseContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
+  const [showUnbookingModal, setShowUnbookingModal] = useState(false);
+  const [selectedReason, setSelectedReason] = useState("");
+  const [showEditForm, setShowEditForm] = useState(false); // Manage visibility of the edit form
+  const [newDate, setNewDate] = useState(selectedDate); // Store the new date
+  const [newTime, setNewTime] = useState(selectedTime); // Store the new time
+  const [newBarber, setNewBarber] = useState(selectedBarber); // Store the new barber
 
-  const handleUnbooking = () =>{
-    setSelectedBarber(null)
-    setSelectedHaircut(null)
-    setSelectedTime(null)
-    setSelectedDate(null)
-    navigate("/")
-    
-  }
+  const reasons = [
+    "Changed my mind",
+    "Found a better offer",
+    "Scheduling conflict",
+    "Personal reasons",
+    "Other"
+  ];
+
+  const handleUnbooking = () => {
+    if (selectedReason) {
+      setCancellationReason(selectedReason);
+      setSelectedBarber(null);
+      setSelectedHaircut(null);
+      setSelectedTime(null);
+      setSelectedDate(null);
+      navigate("/");
+    }
+  };
+
+  const handleNewBooking = () => {
+    // Retain current data before resetting the state
+    const bookingData = {
+      barber: selectedBarber,
+      haircut: selectedHaircut,
+      date: selectedDate,
+      time: selectedTime,
+    };
+
+    // Reset states for new booking
+    setSelectedBarber(null);
+    setSelectedHaircut(null);
+    setSelectedTime(null);
+    setSelectedDate(null);
+
+    // Save the data in the context (you can store this data in localStorage if you need it even after page refresh)
+    setPersonalInfo(bookingData);
+
+    // Navigate to the homepage
+    navigate("/");
+  };
+
+  const handleSaveChanges = () => {
+    setSelectedBarber(newBarber);
+    setSelectedHaircut(selectedHaircut); // Assume haircuts are unchanged
+    setSelectedDate(newDate);
+    setSelectedTime(newTime);
+
+    setShowEditForm(false); // Hide the edit form
+  };
+
+  // Sample data for available barbers and times
+  const barbers = [
+    { id: 1, name: "Barber 1", times: ["10:00", "12:00", "14:00"] },
+    { id: 2, name: "Barber 2", times: ["09:00", "11:00", "13:00"] },
+    { id: 3, name: "Barber 3", times: ["08:00", "10:30", "12:30"] },
+  ];
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-8">
       <Card className="w-full max-w-5xl bg-white shadow-2xl rounded-3xl p-8">
@@ -47,7 +107,7 @@ const BookingConfirmation = () => {
                 <div className="flex items-center justify-center gap-4 mt-2 text-gray-700">
                   <Calendar className="w-6 h-6" />
                   <span className="text-lg">
-                     {selectedDate ? selectedDate.toISOString("uz-UZ") : "Sana tanlanmagan"}
+                    {selectedDate ? selectedDate.toISOString("uz-UZ") : "Sana tanlanmagan"}
                   </span>
 
                   <Clock className="w-6 h-6" />
@@ -58,11 +118,78 @@ const BookingConfirmation = () => {
           </div>
           {/* Buttons */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <Button className="w-full text-lg">Yana buyurtma qilish</Button>
+            <Button className="w-full text-lg" onClick={handleNewBooking}>Yana buyurtma qilish</Button>
             <Button variant="outline" className="w-full text-lg">Kalendarda ko'rish</Button>
-            <Button variant="outline" className="w-full text-lg" onClick={()=> handleUnbooking()}>Buyurtmani o'zgartirish</Button>
-            <Button variant="destructive" className="w-full text-lg" onClick={()=> handleUnbooking()}>Buyurtmani bekor qilish</Button>
+            <Button variant="outline" className="w-full text-lg" onClick={() => setShowEditForm(true)}>Buyurtmani o'zgartirish</Button>
+            <Button variant="destructive" className="w-full text-lg" onClick={() => setShowUnbookingModal(true)}>Buyurtmani bekor qilish</Button>
           </div>
+
+          {showUnbookingModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+              <div className="bg-white p-6 rounded-xl w-96">
+                <h2 className="text-xl font-bold mb-4">Bekor qilish sababi</h2>
+                {reasons.map((reason, index) => (
+                  <div key={index} className="flex items-center mb-2">
+                    <input
+                      type="radio"
+                      name="reason"
+                      value={reason}
+                      checked={selectedReason === reason}
+                      onChange={() => setSelectedReason(reason)}
+                      className="mr-2"
+                    />
+                    <label>{reason}</label>
+                  </div>
+                ))}
+                <Button className="mt-4 w-full" onClick={handleUnbooking} disabled={!selectedReason}>OK</Button>
+                <Button variant="outline" className="mt-2 w-full" onClick={() => setShowUnbookingModal(false)}>Bekor qilish</Button>
+              </div>
+            </div>
+          )}
+
+          {showEditForm && (
+            <div className="w-full mt-6 bg-white p-6 rounded-xl shadow-lg">
+              <h2 className="text-xl font-bold mb-4">Buyurtmani o'zgartirish</h2>
+              <div className="mb-4">
+                <label className="block mb-2">Sana</label>
+                <DatePicker
+                  selected={newDate}
+                  onChange={setNewDate}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-2">Vaqt</label>
+                <select
+                  value={newTime}
+                  onChange={(e) => setNewTime(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                >
+                  {newBarber?.times?.map((time, index) => (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block mb-2">Sartarosh</label>
+                <select
+                  value={newBarber?.id || ""}
+                  onChange={(e) => setNewBarber(barbers.find(b => b.id === parseInt(e.target.value)))}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                >
+                  {barbers.map((barber) => (
+                    <option key={barber.id} value={barber.id}>
+                      {barber.name} 
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Button onClick={handleSaveChanges} className="w-full">Saqlash</Button>
+              <Button variant="outline" className="mt-2 w-full" onClick={() => setShowEditForm(false)}>Bekor qilish</Button>
+            </div>
+          )} 
           {/* Haircut Info */}
           <div className="mt-6">
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Soch turmak</h3>
@@ -76,7 +203,7 @@ const BookingConfirmation = () => {
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Kontakt</h3>
             <div className="flex items-center gap-4 text-gray-700 text-lg">
               <MapPin className="w-6 h-6" />
-              {/* <span>{selectedBarber?.location || "Manzil mavjud emas"}</span> */}
+              <span>{selectedBarber?.location || "Manzil mavjud emas"}</span>
             </div>
             <div className="flex items-center gap-4 text-gray-700 text-lg mt-2">
               <Phone className="w-6 h-6" />
@@ -94,3 +221,5 @@ const BookingConfirmation = () => {
 };
 
 export default BookingConfirmation;
+
+ 

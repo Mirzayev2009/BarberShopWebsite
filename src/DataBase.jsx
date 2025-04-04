@@ -7,17 +7,20 @@ export const DatabaseProvider = ({ children }) => {
   const [selectedHaircut, setSelectedHaircut] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [personalInfo, setPersonalInfo] = useState(null)
- console.log(selectedDate);
- console.log(selectedTime);
- console.log(selectedHaircut);
- console.log(selectedBarber);
- console.log(personalInfo);
- 
- 
- 
- 
-
+  const [cancellationReason, setCancellationReason] = useState("");
+  const [personalInfo, setPersonalInfo] = useState(null); // Add this state
+  console.log(cancellationReason);
+  console.log(personalInfo);
+  console.log(selectedBarber);
+  console.log(selectedDate);
+  console.log(selectedTime);
+  console.log(selectedHaircut);
+  
+  
+  
+  
+  
+  
   return (
     <DatabaseContext.Provider
       value={{
@@ -29,11 +32,14 @@ export const DatabaseProvider = ({ children }) => {
         setSelectedDate,
         selectedTime,
         setSelectedTime,
+        cancellationReason,
+        setCancellationReason,
         personalInfo,
-        setPersonalInfo
+        setPersonalInfo, // Make sure to pass this to the context
       }}
     >
       {children}
     </DatabaseContext.Provider>
   );
 };
+
