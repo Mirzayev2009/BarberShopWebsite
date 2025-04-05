@@ -9,6 +9,7 @@ export const DatabaseProvider = ({ children }) => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [cancellationReason, setCancellationReason] = useState("");
   const [personalInfo, setPersonalInfo] = useState(null); // Add this state
+  const [barbersData, setBarbersData] = useState([])
   console.log(cancellationReason);
   console.log(personalInfo);
   console.log(selectedBarber);
@@ -35,7 +36,9 @@ export const DatabaseProvider = ({ children }) => {
         cancellationReason,
         setCancellationReason,
         personalInfo,
-        setPersonalInfo, // Make sure to pass this to the context
+        setPersonalInfo, 
+        barbersData,
+        setBarbersData
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Star, User, MapPin, Phone, Globe } from "lucide-react";
@@ -6,6 +6,7 @@ import { DatabaseContext } from "../DataBase";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker"; // For date selection (you can install this package)
 import "react-datepicker/dist/react-datepicker.css"; // Import CSS for the datepicker
+
 
 const BookingConfirmation = () => {
   const {
@@ -19,14 +20,17 @@ const BookingConfirmation = () => {
     setSelectedDate,
     setCancellationReason,
     setPersonalInfo,
-    personalInfo // Accessing personalInfo from context
+    personalInfo,
+    barbersData,
+    setBarbersData
   } = useContext(DatabaseContext);
+
   const navigate = useNavigate();
 
   const [showUnbookingModal, setShowUnbookingModal] = useState(false);
   const [selectedReason, setSelectedReason] = useState("");
-  const [showEditForm, setShowEditForm] = useState(false); // Manage visibility of the edit form
-  const [newDate, setNewDate] = useState(selectedDate); // Store the new date
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [newDate, setNewDate] = useState(selectedDate);
   const [newTime, setNewTime] = useState(selectedTime); // Store the new time
   const [newBarber, setNewBarber] = useState(selectedBarber); // Store the new barber
 
@@ -37,6 +41,16 @@ const BookingConfirmation = () => {
     "Personal reasons",
     "Other"
   ];
+
+  // Effect to update newTime when newBarber changes
+  useEffect(() => {
+    if (newBarber && newBarber.times) {
+      // If there's no time selected, set the first available time
+      if (!newTime || !newBarber.times.includes(newTime)) {
+        setNewTime(newBarber.times[0] || "No available time");
+      }
+    }
+  }, [newBarber, newTime]);
 
   const handleUnbooking = () => {
     if (selectedReason) {
@@ -50,7 +64,6 @@ const BookingConfirmation = () => {
   };
 
   const handleNewBooking = () => {
-    // Retain current data before resetting the state
     const bookingData = {
       barber: selectedBarber,
       haircut: selectedHaircut,
@@ -58,34 +71,34 @@ const BookingConfirmation = () => {
       time: selectedTime,
     };
 
-    // Reset states for new booking
     setSelectedBarber(null);
     setSelectedHaircut(null);
     setSelectedTime(null);
     setSelectedDate(null);
 
-    // Save the data in the context (you can store this data in localStorage if you need it even after page refresh)
     setPersonalInfo(bookingData);
-
-    // Navigate to the homepage
     navigate("/");
   };
 
   const handleSaveChanges = () => {
-    setSelectedBarber(newBarber);
-    setSelectedHaircut(selectedHaircut); // Assume haircuts are unchanged
-    setSelectedDate(newDate);
-    setSelectedTime(newTime);
+    const selectedNewBarber = barbers.find(b => b.id === parseInt(newBarber.id));
 
-    setShowEditForm(false); // Hide the edit form
+    if (selectedNewBarber) {
+      setNewBarber(selectedNewBarber);
+      setSelectedBarber(selectedNewBarber); // Update the context with the new barber
+      setSelectedHaircut(selectedHaircut); // Assume haircuts remain unchanged
+      setSelectedDate(newDate);
+      setSelectedTime(newTime);
+
+      // Ensure newTime reflects the selected barber's available times
+      if (!newTime || !selectedNewBarber.times.includes(newTime)) {
+        setNewTime(selectedNewBarber.times[0] || "No available time");
+      }
+    }
+    setShowEditForm(false); // Hide the edit form after saving
   };
 
-  // Sample data for available barbers and times
-  const barbers = [
-    { id: 1, name: "Barber 1", times: ["10:00", "12:00", "14:00"] },
-    { id: 2, name: "Barber 2", times: ["09:00", "11:00", "13:00"] },
-    { id: 3, name: "Barber 3", times: ["08:00", "10:30", "12:30"] },
-  ];
+  const barbers = barbersData;
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-8">
@@ -106,9 +119,7 @@ const BookingConfirmation = () => {
                 </div>
                 <div className="flex items-center justify-center gap-4 mt-2 text-gray-700">
                   <Calendar className="w-6 h-6" />
-                  <span className="text-lg">
-                    {selectedDate ? selectedDate.toISOString("uz-UZ") : "Sana tanlanmagan"}
-                  </span>
+                  <span className="text-lg">{selectedDate ? selectedDate.toISOString("uz-UZ") : "Sana tanlanmagan"}</span>
 
                   <Clock className="w-6 h-6" />
                   <span className="text-lg">{selectedTime || "Vaqt tanlanmagan"}</span>
@@ -181,7 +192,7 @@ const BookingConfirmation = () => {
                 >
                   {barbers.map((barber) => (
                     <option key={barber.id} value={barber.id}>
-                      {barber.name} 
+                      {barber.name}
                     </option>
                   ))}
                 </select>
@@ -189,7 +200,8 @@ const BookingConfirmation = () => {
               <Button onClick={handleSaveChanges} className="w-full">Saqlash</Button>
               <Button variant="outline" className="mt-2 w-full" onClick={() => setShowEditForm(false)}>Bekor qilish</Button>
             </div>
-          )} 
+          )}
+
           {/* Haircut Info */}
           <div className="mt-6">
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Soch turmak</h3>
@@ -221,5 +233,3 @@ const BookingConfirmation = () => {
 };
 
 export default BookingConfirmation;
-
- 
