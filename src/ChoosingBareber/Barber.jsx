@@ -1,9 +1,8 @@
-import { useContext , useEffect} from "react";
+import { useContext, useEffect } from "react";
 import { toast } from "sonner";
 import { DatabaseContext } from "../Database";
 import { DatePicker } from "@mantine/dates";
 import { useNavigate } from "react-router-dom";
-import { formatRelative } from "date-fns";
 
 const BarberCard = ({ barber }) => {
   const navigate = useNavigate();
@@ -32,99 +31,90 @@ const BarberCard = ({ barber }) => {
         onClick: () => navigate("/choosingdate"),
       },
     });
-  };
+  }; 
 
   return (
-    <div className="w-[500px] p-8 mt-28 bg-white shadow-lg rounded-2xl text-center hover:scale-105 hover:shadow-2xl transition-transform duration-300">
-      <img src={barber.image} alt={barber.name} className="w-52 h-52 object-cover rounded-full mx-auto hover:scale-105 transition-transform duration-300" />
-      <h2 className="text-3xl font-bold mt-4">{barber.name}</h2>
-      <p className="text-gray-600 text-lg">Reviews: {barber.reviews}</p>
+    <div className="col-md-4 col-sm-6 mb-4">
+      <div className="card shadow-lg rounded-3 p-4">
+        <img
+          src={barber.image}
+          alt={barber.name}
+          className="card-img-top rounded-circle mx-auto d-block"
+          style={{ width: "150px", height: "150px", objectFit: "cover" }}
+        />
+        <div className="card-body text-center">
+          <h5 className="card-title">{barber.name}</h5>
+          <p className="card-text text-muted">Reviews: {barber.reviews}</p>
 
-      {/* Date Picker */}
-      {isSelectedBarber && selectedTime && (
-        <div className="mt-4 flex flex-col items-center">
-          <DatePicker
-            value={selectedDate}
-            onChange={handleDateChange}
-            className="w-full max-w-[280px] border-2 border-gray-300 rounded-lg p-4 shadow-lg"
-            styles={{
-              input: {
-                height: 45,
-                fontSize: '16px',
-                paddingLeft: '10px',
-                paddingRight: '10px',
-                borderRadius: '8px',
-              },
-              calendar: {
-                borderRadius: '12px',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
-              },
-              day: {
-                fontWeight: 'bold',
-                borderRadius: '6px',
-                '&[dataSelected]': {
-                  backgroundColor: '#4A90E2',
-                  color: 'white',
-                },
-                '&:hover': {
-                  backgroundColor: '#E4F0FF',
-                },
-              },
-            }}
-          />
+          {/* Date Picker */}
+          {isSelectedBarber && selectedTime && (
+            <div className="mt-3">
+              <DatePicker
+                value={selectedDate}
+                onChange={handleDateChange}
+                className="form-control"
+              />
+            </div>
+          )}
+
+          <h6 className="mt-3">Bo'sh vaqtlar:</h6>
+          <div className="btn-group mt-2 d-flex justify-content-center flex-wrap">
+            {barber.times.map((time, index) => (
+              <button
+                key={index}
+                onClick={() => handleTimeClick(time)}
+                className={`btn btn-${selectedTime === time ? "primary" : "warning"} m-1`}
+              >
+                {time}
+              </button>
+            ))}
+          </div>
+
+          {/* Proceed Button */}
+          {isSelectedBarber && selectedTime && selectedDate && (
+            <button className="btn btn-primary w-100 mt-4" onClick={() => navigate("/choosinghaircut")}>
+              Davom etish
+            </button>
+          )}
+
+          <div className="mt-3">
+            <p className="d-flex justify-content-between">
+              <span>
+                <i className="bx bxs-phone"></i> {barber.contact}
+              </span>
+              {barber.socials.map((social, index) => (
+                <a key={index} href={social.link} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={social.icon}
+                    className="social-icon"
+                    alt={social.name}
+                    style={{ width: "30px", height: "30px" }}
+                  />
+                </a>
+              ))}
+            </p>
+            <button className="btn btn-outline-primary" onClick={handleBarberSelection}>
+              <i className="bx bx-check-circle"></i>
+            </button>
+          </div>
         </div>
-      )}
-
-      <h3 className="text-2xl font-semibold mt-4">Bo'sh vaqtlar:</h3>
-      <div className="flex flex-wrap gap-3 justify-center mt-3">
-        {barber.times.map((time, index) => (
-          <button
-            key={index}
-            onClick={() => handleTimeClick(time)}
-            className={`px-5 py-2 rounded-lg text-lg transition-all duration-300 ${selectedTime === time ? 'bg-blue-700 text-white scale-105' : 'bg-amber-500 text-white hover:bg-blue-700 hover:scale-105'}`}
-          >
-            {time}
-          </button>
-        ))}
-      </div>
-
-      {/* Proceed Button */}
-      {isSelectedBarber && selectedTime && selectedDate && (
-        <button className="mt-4 w-[70%] bg-blue-700 text-white py-2 rounded-lg text-xl" onClick={() => navigate("/choosinghaircut")}>
-          Davom etish
-        </button>
-      )}
-
-      <div className="mt-4 flex justify-between items-center text-lg text-gray-700">
-        <p className="flex items-center gap-2">
-          <i className="bx bxs-phone bx-md"></i> {barber.contact}
-        </p>
-        {barber.socials.map((social, index) => (
-          <a key={index} href={social.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-75">
-            <img src={social.icon} className="w-8 h-8" />
-            <span>{barber.social_contact}</span>
-          </a>
-        ))}
-        <button className="text-4xl hover:text-blue-600 transition-colors" onClick={handleBarberSelection}>
-          <i className="bx bx-check-circle text-6xl"></i>
-        </button>
       </div>
     </div>
   );
 };
-
-
-
 
 const BarberList = ({ barbers }) => {
   return (
-    <div className="flex flex-wrap justify-center gap-8 p-8">
-      {barbers.map((barber, index) => (
-        <BarberCard key={index} barber={barber} />
-      ))}
+    <div className="container">
+      <div className="row">
+        {barbers.map((barber, index) => (
+          <BarberCard key={index} barber={barber} />
+        ))}
+      </div>
     </div>
   );
 };
+
 const Barber = () => {
   const { setBarbersData } = useContext(DatabaseContext);
 
@@ -135,7 +125,6 @@ const Barber = () => {
       reviews: 45,
       times: ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30"],
       contact: "+998 91 234 56 78",
-      social_contact: "aslbek_abdullayev",
       socials: [
         {
           name: "Instagram",
@@ -143,6 +132,7 @@ const Barber = () => {
           icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
         },
       ],
+      location: [41.311081, 69.240562], // Adding the location here
     },
     {
       name: "Axmadjon Orziqulov",
@@ -150,7 +140,6 @@ const Barber = () => {
       reviews: 30,
       times: ["09:00", "12:30", "14:30", "15:00", "17:00"],
       contact: "+998 99 876 54 32",
-      social_contact: "axmadjon_orziqulov",
       socials: [
         {
           name: "Instagram",
@@ -158,6 +147,7 @@ const Barber = () => {
           icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
         },
       ],
+      location: [41.2995, 69.2401], // Adding the location here
     },
     {
       name: "Shohrux Hamraqulov",
@@ -165,7 +155,6 @@ const Barber = () => {
       reviews: 25,
       times: ["08:00", "10:30", "16:00", "16:30", "17:00", "17:30"],
       contact: "+998 94 532 24 56",
-      social_contact: "shohrux_hamraqulov",
       socials: [
         {
           name: "Instagram",
@@ -173,20 +162,15 @@ const Barber = () => {
           icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
         },
       ],
+      location: [41.310000, 69.250000], // Adding the location here
     },
   ];
 
-  // Set the barbers data after initializing it
   useEffect(() => {
     setBarbersData(barbersData);
   }, [setBarbersData]);
 
-  return (
-    <BarberList barbers={barbersData} />
-  );
+  return <BarberList barbers={barbersData} />;
 };
 
-
 export default Barber;
-
-

@@ -8,6 +8,7 @@ import ChoosingDate from "./ChoosingDate/ChoosingDate";
 import { DatabaseProvider } from "./Database"; // Import provider
 import FillingInfo from "./FillingInfoPage/FillingInfo";
 import FinalPage from "./FinalPage/FinalPage";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
   return (

@@ -81,69 +81,73 @@ const HaircutList = ({ setChoosenHaircut }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center p-4">
-      {/* Search Bar */}
-      <input
-        type="text"
-        placeholder="Qidiring..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full max-w-lg p-2 mb-4 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-      />
+<div className="container px-4 py-5">
+  {/* Search Bar */}
+  <input
+    type="text"
+    placeholder="Qidiring..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="form-control mb-4 w-100 mx-auto max-w-lg"
+  />
 
-      {/* Haircuts List */}
-      <div className="w-full flex flex-wrap justify-center gap-6">
-        {filteredHaircuts.length > 0 ? (
-          filteredHaircuts.map((haircut) => (
-            <div
-              key={haircut.id}
-              className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200"
-            >
-              {/* Title & Price Section */}
-              <div className="p-4">
-                <h2 className="text-lg font-bold">{haircut.name}</h2>
-              </div>
-
-              {/* Image Section */}
-              <div className="relative w-full h-52">
-                <img
-                  src={haircut.imageUrl || "https://via.placeholder.com/400x150"}
-                  alt={haircut.name}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform"
-                />
-              </div>
-
-              {/* Description & Price */}
-              <div className="p-4">
-                <p className="text-sm text-gray-600">{haircut.description}</p>
-                <p className="text-2xl font-semibold mt-2">{haircut.price} ₽</p>
-              </div>
-
-              {/* Service Info */}
-              <div className="p-4 flex justify-between items-center text-gray-700">
-                <span>{haircut.duration} daqiqa</span>
-                <span className="text-lg font-bold">{haircut.discountPrice} ₽</span>
-              </div>
-
-              {/* Action Button */}
-              <div className="px-6 pb-6">
-                <button
-                  onClick={() => handleHaircutSelection(haircut)}
-                  className="w-full bg-amber-600 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-                >
-                  Soch-turmakni tanlang
-                </button>
-              </div>
+  {/* Haircuts List */}
+  <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+    {filteredHaircuts.length > 0 ? (
+      filteredHaircuts.map((haircut) => (
+        <div
+          key={haircut.id}
+          className="col"
+        >
+          <div className="card shadow-lg border-0 rounded-3">
+            {/* Title & Price Section */}
+            <div className="card-body">
+              <h5 className="card-title">{haircut.name}</h5>
             </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500">Mos keluvchi natijalar topilmadi.</p>
-        )}
-      </div>
 
-      {/* ✅ Moved SonnerDemo outside of .map() loop */}
-      <SonnerDemo />
-    </div>
+            {/* Image Section */}
+            <div className="position-relative">
+              <img
+                src={haircut.imageUrl || "https://via.placeholder.com/400x150"}
+                alt={haircut.name}
+                className="card-img-top w-100 h-100 object-cover rounded-top"
+                style={{ height: '200px' }}
+              />
+            </div>
+
+            {/* Description & Price */}
+            <div className="card-body">
+              <p className="card-text text-muted">{haircut.description}</p>
+              <p className="fs-4 fw-bold">{haircut.price} ₽</p>
+            </div>
+
+            {/* Service Info */}
+            <div className="card-footer d-flex justify-content-between align-items-center">
+              <span>{haircut.duration} daqiqa</span>
+              <span className="text-lg fw-bold">{haircut.discountPrice} ₽</span>
+            </div>
+
+            {/* Action Button */}
+            <div className="card-footer text-center">
+              <button
+                onClick={() => handleHaircutSelection(haircut)}
+                className="btn btn-warning w-100"
+              >
+                Soch-turmakni tanlang
+              </button>
+            </div>
+          </div>
+        </div>
+      ))
+    ) : (
+      <p className="text-center text-muted">Mos keluvchi natijalar topilmadi.</p>
+    )}
+  </div>
+
+  {/* ✅ Moved SonnerDemo outside of .map() loop */}
+  <SonnerDemo />
+</div>
+
   );
 };
 

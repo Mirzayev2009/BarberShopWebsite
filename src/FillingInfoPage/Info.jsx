@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onUpdate }) => {
+const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onUpdate , barbersData}) => {
   const navigate = useNavigate();
 
   const handleUpdate = (field, value) => {

@@ -5,7 +5,7 @@ import React, { useContext } from 'react'
 import PersonalInfoForm from './Form';
 
 const FillingInfo = () => {
-  const { selectedTime, selectedDate, selectedBarber, selectedHaircut, setSelectedTime, setSelectedDate } = useContext(DatabaseContext);
+  const { selectedTime, selectedDate, selectedBarber, selectedHaircut, setSelectedTime, setSelectedDate, barbersData } = useContext(DatabaseContext);
 
   console.log("selectedBarber:", selectedBarber); // ✅ Check if this has a value
 
@@ -24,7 +24,8 @@ const FillingInfo = () => {
           selectedDate={selectedDate}
           selectedHaircut={selectedHaircut}
           selectedTime={selectedTime}
-          onUpdate={handleUpdate}  // ✅ Passing onUpdate prop
+          onUpdate={handleUpdate} 
+          barbersData = {barbersData}
         />
       </div>
       <div><PersonalInfoForm/></div>

@@ -6,6 +6,7 @@ import { DatabaseContext } from "../DataBase";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker"; // For date selection (you can install this package)
 import "react-datepicker/dist/react-datepicker.css"; // Import CSS for the datepicker
+import YandexMap from "./Yandex";
 
 
 const BookingConfirmation = () => {
@@ -178,7 +179,7 @@ const BookingConfirmation = () => {
                 >
                   {newBarber?.times?.map((time, index) => (
                     <option key={index} value={time}>
-                      {time}
+                      {time} 
                     </option>
                   ))}
                 </select>
@@ -188,12 +189,13 @@ const BookingConfirmation = () => {
                 <select
                   value={newBarber?.id || ""}
                   onChange={(e) => setNewBarber(barbers.find(b => b.id === parseInt(e.target.value)))}
+                  
                   className="w-full p-2 border border-gray-300 rounded-md"
                 >
                   {barbers.map((barber) => (
                     <option key={barber.id} value={barber.id}>
                       {barber.name}
-                    </option>
+                    </option> 
                   ))}
                 </select>
               </div>
@@ -215,7 +217,8 @@ const BookingConfirmation = () => {
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Kontakt</h3>
             <div className="flex items-center gap-4 text-gray-700 text-lg">
               <MapPin className="w-6 h-6" />
-              <span>{selectedBarber?.location || "Manzil mavjud emas"}</span>
+              {/* <span>{selectedBarber?.location || "Manzil mavjud emas"}</span> */}
+              <YandexMap/>
             </div>
             <div className="flex items-center gap-4 text-gray-700 text-lg mt-2">
               <Phone className="w-6 h-6" />
