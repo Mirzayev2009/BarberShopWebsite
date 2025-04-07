@@ -19,7 +19,7 @@ const ChoosingBarber = () => {
   return (
     <div className='w-full h-full '>
         <Nav/>
-        <Barber setChoosenBarber = {setChoosenBarber}/>
+        <Barber setChoosenBarber = {setChoosenBarber} className="mt-24 "/>
         <Toaster/>
     </div>
   )

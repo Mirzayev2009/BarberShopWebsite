@@ -6,24 +6,43 @@ import { useNavigate } from "react-router-dom";
 
 const BarberCard = ({ barber }) => {
   const navigate = useNavigate();
-  const { selectedTime, setSelectedTime, selectedDate, setSelectedDate, selectedBarber, setSelectedBarber, personalInfo, setPersonalInfo } = useContext(DatabaseContext);
+  const {
+    selectedTime,
+    setSelectedTime,
+    selectedDate,
+    setSelectedDate,
+    selectedBarber,
+    setSelectedBarber,
+    personalInfo,
+    setPersonalInfo,
+  } = useContext(DatabaseContext);
 
   const isSelectedBarber = selectedBarber?.name === barber.name;
 
   const handleTimeClick = (time) => {
     setSelectedBarber(barber);
     setSelectedTime(time);
-    setPersonalInfo((prev) => ({ ...prev, selectedTime: time, selectedBarber: barber }));
+    setPersonalInfo((prev) => ({
+      ...prev,
+      selectedTime: time,
+      selectedBarber: barber,
+    }));
   };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    setPersonalInfo((prev) => ({ ...prev, selectedDate: date }));
+    setPersonalInfo((prev) => ({
+      ...prev,
+      selectedDate: date,
+    }));
   };
 
   const handleBarberSelection = () => {
     setSelectedBarber(barber);
-    setPersonalInfo((prev) => ({ ...prev, selectedBarber: barber }));
+    setPersonalInfo((prev) => ({
+      ...prev,
+      selectedBarber: barber,
+    }));
 
     toast.success(`Sartarosh tanlandi: ${barber.name}. Endi vaqtni tanlang.`, {
       action: {
@@ -31,75 +50,94 @@ const BarberCard = ({ barber }) => {
         onClick: () => navigate("/choosingdate"),
       },
     });
-  }; 
+  };
 
   return (
-    <div className="col-md-4 col-sm-6 mb-4">
-      <div className="card shadow-lg rounded-3 p-4">
-        <img
-          src={barber.image}
-          alt={barber.name}
-          className="card-img-top rounded-circle mx-auto d-block"
-          style={{ width: "150px", height: "150px", objectFit: "cover" }}
-        />
-        <div className="card-body text-center">
-          <h5 className="card-title">{barber.name}</h5>
-          <p className="card-text text-muted">Reviews: {barber.reviews}</p>
+<div className="col-md-4 col-sm-6 mb-4 mt-32">
+  <div
+    className={`card shadow-lg rounded-3 p-4 ${
+      isSelectedBarber ? "border border-primary" : ""
+    }`}
+  >
+    <img
+      src={barber.image}
+      alt={barber.name}
+      className="card-img-top rounded-circle mx-auto d-block"
+      style={{ width: "150px", height: "150px", objectFit: "cover" }}
+    />
+    <div className="card-body text-center">
+      <h5 className="card-title">{barber.name}</h5>
+      <p className="card-text text-muted">Reviews: {barber.reviews}</p>
 
-          {/* Date Picker */}
-          {isSelectedBarber && selectedTime && (
-            <div className="mt-3">
-              <DatePicker
-                value={selectedDate}
-                onChange={handleDateChange}
-                className="form-control"
-              />
-            </div>
-          )}
-
-          <h6 className="mt-3">Bo'sh vaqtlar:</h6>
-          <div className="btn-group mt-2 d-flex justify-content-center flex-wrap">
-            {barber.times.map((time, index) => (
-              <button
-                key={index}
-                onClick={() => handleTimeClick(time)}
-                className={`btn btn-${selectedTime === time ? "primary" : "warning"} m-1`}
-              >
-                {time}
-              </button>
-            ))}
-          </div>
-
-          {/* Proceed Button */}
-          {isSelectedBarber && selectedTime && selectedDate && (
-            <button className="btn btn-primary w-100 mt-4" onClick={() => navigate("/choosinghaircut")}>
-              Davom etish
-            </button>
-          )}
-
-          <div className="mt-3">
-            <p className="d-flex justify-content-between">
-              <span>
-                <i className="bx bxs-phone"></i> {barber.contact}
-              </span>
-              {barber.socials.map((social, index) => (
-                <a key={index} href={social.link} target="_blank" rel="noopener noreferrer">
-                  <img
-                    src={social.icon}
-                    className="social-icon"
-                    alt={social.name}
-                    style={{ width: "30px", height: "30px" }}
-                  />
-                </a>
-              ))}
-            </p>
-            <button className="btn btn-outline-primary" onClick={handleBarberSelection}>
-              <i className="bx bx-check-circle"></i>
-            </button>
-          </div>
+      {/* Date Picker */}
+      {isSelectedBarber && selectedTime && (
+        <div className="col-md-4 col-sm-6 mb-4 mt-32">
+          <DatePicker value={selectedDate} onChange={handleDateChange} />
         </div>
+      )}
+
+      <h6 className="mt-3">Bo'sh vaqtlar:</h6>
+      <div className="btn-group mt-2 d-flex justify-content-center flex-wrap">
+        {barber.times.map((time, index) => (
+          <button
+            key={index}
+            onClick={() => handleTimeClick(time)}
+            className={`btn btn-${
+              isSelectedBarber && selectedTime === time
+                ? "primary"
+                : "warning"
+            } m-1`}
+          >
+            {time}
+          </button>
+        ))}
+      </div>
+
+      {/* Proceed Button */}
+      {isSelectedBarber && selectedTime && selectedDate && (
+        <button
+          className="btn btn-primary w-100 mt-4"
+          onClick={() => navigate("/choosinghaircut")}
+        >
+          Davom etish
+        </button>
+      )}
+
+      <div className="mt-3">
+        <p className="d-flex justify-content-between align-items-center">
+          <span>
+            <i className="bx bxs-phone"></i> {barber.contact}
+          </span>
+          <span className="d-flex gap-2">
+            {barber.socials.map((social, index) => (
+              <a
+                key={index}
+                href={social.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={social.icon}
+                  className="social-icon"
+                  alt={social.name}
+                  style={{ width: "30px", height: "30px" }}
+                />
+              </a>
+            ))}
+          </span>
+        </p>
+        <button
+          className="btn btn-outline-primary"
+          onClick={handleBarberSelection}
+        >
+          <i className="bx bx-check-circle"></i>    
+        </button>
       </div>
     </div>
+  </div>
+</div>
+
+
   );
 };
 

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 function TimePicker({ setChoosenTime, selectedBarber }) {
   const [selectedTime, setSelectedTime] = useState(null);
 
-  const times = selectedBarber.times || []; // Ensure it's an array
+  const times = selectedBarber.times || ["17:00"]; // Ensure it's an array
 
   // ✅ Update chosen time when user selects a time slot
   const handleTimeSelection = (time) => {

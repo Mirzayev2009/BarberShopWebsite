@@ -43,6 +43,7 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
           <div className="flex items-center space-x-2">
             <Calendar className="w-5 h-5 text-blue-500" />
             <Input 
+               dateFormat = "DD/MM/YYYY"
                type="date" 
                value={selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : ""} 
                onChange={(e) => handleUpdate('selectedDate', e.target.value)} 

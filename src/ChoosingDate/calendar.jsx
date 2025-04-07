@@ -5,7 +5,7 @@ import "react-day-picker/dist/style.css";
 
 function MyDatePicker({ setChoosenDay, initialDate = null }) {
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Ensure no time component affects comparison
+  // today.setHours(0, 0, 0, 0); // Ensure no time component affects comparison
 
   const [selected, setSelected] = useState(initialDate || today); // Default to today
 
@@ -21,6 +21,7 @@ function MyDatePicker({ setChoosenDay, initialDate = null }) {
         selected={selected}
         onSelect={setSelected}
         disabled={{ before: today }} // Disable past dates
+        dateFormat = "DD/MM/YYYY"
         footer={selected ? `Tanlangan kun: ${selected.toLocaleDateString("uz-UZ")}` : "Kunni tanlang"}
         classNames={{
           months: "flex flex-col gap-4",
