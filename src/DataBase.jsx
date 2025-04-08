@@ -16,6 +16,8 @@ export const DatabaseProvider = ({ children }) => {
   console.log(selectedDate);
   console.log(selectedTime);
   console.log(selectedHaircut);
+  console.log(barbersData);
+  
   
   
   
