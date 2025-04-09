@@ -3,7 +3,7 @@ import React, { createContext, useState } from "react";
 export const DatabaseContext = createContext();
 
 export const DatabaseProvider = ({ children }) => {
-  const [selectedBarber, setSelectedBarber] = useState(null);
+  const [selectedBarber, setSelectedBarber] = useState();
   const [selectedHaircut, setSelectedHaircut] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);

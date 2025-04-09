@@ -1,7 +1,7 @@
-import { DatabaseContext } from '@/DataBase'
-import Nav from '@/Nav'
-import Info from './Info'
-import React, { useContext } from 'react'
+import { DatabaseContext } from '@/DataBase';
+import Nav from '@/Nav';
+import Info from './Info';
+import React, { useContext } from 'react';
 import PersonalInfoForm from './Form';
 
 const FillingInfo = () => {
@@ -18,17 +18,25 @@ const FillingInfo = () => {
   return (
     <div>
       {/* <Nav /> */}
+      
       <div>
-        <Info
-          selectedBarber={selectedBarber}
-          selectedDate={selectedDate}
-          selectedHaircut={selectedHaircut}
-          selectedTime={selectedTime}
-          onUpdate={handleUpdate} 
-          barbersData = {barbersData}
-        />
+        {/* Ensure selectedBarber is not undefined or null before passing it to Info */}
+        {selectedBarber ? (
+          <Info
+            selectedBarber={selectedBarber}
+            selectedDate={selectedDate}
+            selectedHaircut={selectedHaircut}
+            selectedTime={selectedTime}
+            onUpdate={handleUpdate}
+          />
+        ) : (
+          <p>Please select a barber to continue.</p> // Fallback message if no barber is selected
+        )}
       </div>
-      <div><PersonalInfoForm/></div>
+
+      <div>
+        <PersonalInfoForm />
+      </div>
     </div>
   );
 };

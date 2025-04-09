@@ -1,64 +1,62 @@
-import { useContext, useEffect } from "react";
-import { toast } from "sonner";
-import { DatabaseContext } from "../Database";
+import React, { useState, useContext, useEffect } from "react";
+import { DatabaseContext } from "../Database"; // Import context
 import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs"; // Ensure dayjs is imported
 
-const BarberCard = ({ barber }) => {
-  const navigate = useNavigate();
-  const {
-    selectedTime,
-    setSelectedTime,
-    selectedBarber,
-    setSelectedBarber,
-    personalInfo,
-    setPersonalInfo,
-  } = useContext(DatabaseContext);
+const BarberCard = ({ barber, setGo }) => {
+  const { setSelectedBarber, setSelectedTime, setSelectedDate, setPersonalInfo } = useContext(DatabaseContext);
 
-  const isSelectedBarber = selectedBarber?.name === barber.name;
+  const [isSelected, setIsSelected] = useState(false); // Local state for selection
+  const [availableTimesToday, setAvailableTimesToday] = useState([]);
+  const [availableTimesTomorrow, setAvailableTimesTomorrow] = useState([]);
+  const [selectedTime, setSelectedTimeLocal] = useState(null);
+  const [selectedDate, setSelectedDateLocal] = useState(""); // Local state for selected date
 
-  const handleTimeClick = (time) => {
-    if (!selectedBarber) {
-      setSelectedBarber(barber);
+  // Function to format the date to "dd-mm-yyyy" format
+  const formatDate = (date) => {
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  };
+
+  // Get today's and tomorrow's dates
+  const today = new Date();
+  const tomorrow = new Date();  
+  tomorrow.setDate(today.getDate() + 1);
+
+  const todayDate = formatDate(today);
+  const tomorrowDate = formatDate(tomorrow);
+
+  // Get available times for today and tomorrow
+  useEffect(() => {
+    if (barber && barber.times) {
+      setAvailableTimesToday(barber.times[todayDate] || []);
+      setAvailableTimesTomorrow(barber.times[tomorrowDate] || []);
     }
-    setSelectedTime(time);
+  }, [barber, todayDate, tomorrowDate]);
+
+  // Handle time selection
+  const handleTimeSelection = (time, date) => {
+    setSelectedDate(date); // Set the selected date
+    setSelectedTime(time); // Set the selected time
+    setSelectedBarber(barber); // Automatically select the barber
+    setSelectedTimeLocal(time);
+    setSelectedDateLocal(date); // Store selected date locally
 
     setPersonalInfo((prev) => ({
       ...prev,
       selectedBarber: barber,
       selectedTime: time,
+      selectedDate: date,
     }));
+    setGo(true);
   };
-
-  const handleBarberSelection = () => {
-    setSelectedBarber(barber);
-    setSelectedTime(null);
-
-    setPersonalInfo((prev) => ({
-      ...prev,
-      selectedBarber: barber,
-      selectedTime: null,
-    }));
-
-    toast.success(`Sartarosh tanlandi: ${barber.name}. Endi sanani tanlang.`, {
-      action: {
-        label: "Davom etish",
-        onClick: () => navigate("/choosingdate"),
-      },
-    });
-  };
-
-  // Get today's and tomorrow's dates in the format "DD-MM-YYYY"
-  const today = dayjs().format("DD-MM-YYYY");
-  const tomorrow = dayjs().add(1, "day").format("DD-MM-YYYY");
-
-  // Get times available for today's and tomorrow's dates
-  const availableTimesToday = barber.times[today] || [];
-  const availableTimesTomorrow = barber.times[tomorrow] || [];
 
   return (
     <div className="col-md-4 col-sm-6 mb-4 mt-32">
-      <div className={`card shadow-lg rounded-3 p-4 ${isSelectedBarber ? "border border-primary" : ""}`}>
+      <div
+        className={`card shadow-lg rounded-3 p-4 ${isSelected ? "border border-primary" : ""}`}
+      >
         <img
           src={barber.image}
           alt={barber.name}
@@ -69,103 +67,91 @@ const BarberCard = ({ barber }) => {
           <h5 className="card-title">{barber.name}</h5>
           <p className="card-text text-muted">Reviews: {barber.reviews}</p>
 
-          {availableTimesToday.length > 0 && (
-            <>
-              <h6 className="mt-3">Bugungi bo'sh vaqtlar:</h6>
-              <div className="btn-group mt-2 d-flex justify-content-center flex-wrap">
-                {availableTimesToday.map((time, index) => (
+          {/* Display available times for today */}
+          <div className="mt-4">
+            <h5>Bugun ({todayDate})</h5>
+            <div className="grid grid-cols-3 gap-3">
+              {availableTimesToday.length > 0 ? (
+                availableTimesToday.map((time) => (
                   <button
-                    key={index}
-                    onClick={() => handleTimeClick(time)}
-                    className={`btn btn-${selectedTime === time ? "primary" : "warning"} m-1`}
+                    key={time}
+                    className="btn btn-outline-primary"
+                    onClick={() => handleTimeSelection(time, todayDate)}
                   >
                     {time}
                   </button>
-                ))}
-              </div>
-            </>
-          )}
+                ))
+              ) : (
+                <p className="text-muted">Bugun mavjud vaqtlar yo'q.</p>
+              )}
+            </div>
+          </div>
 
-          {availableTimesTomorrow.length > 0 && (
-            <>
-              <h6 className="mt-3">Ertangi bo'sh vaqtlar:</h6>
-              <div className="btn-group mt-2 d-flex justify-content-center flex-wrap">
-                {availableTimesTomorrow.map((time, index) => (
+          {/* Display available times for tomorrow */}
+          <div className="mt-4">
+            <h5>Ertaga ({tomorrowDate})</h5>
+            <div className="grid grid-cols-3 gap-3">
+              {availableTimesTomorrow.length > 0 ? (
+                availableTimesTomorrow.map((time) => (
                   <button
-                    key={index}
-                    onClick={() => handleTimeClick(time)}
-                    className={`btn btn-${selectedTime === time ? "primary" : "warning"} m-1`}
+                    key={time}
+                    className="btn btn-outline-primary"
+                    onClick={() => handleTimeSelection(time, tomorrowDate)}
                   >
                     {time}
                   </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {availableTimesToday.length === 0 && availableTimesTomorrow.length === 0 && (
-            <p className="text-muted">Bugun va ertaga uchun vaqt mavjud emas</p>
-          )}
-
-          {isSelectedBarber && selectedTime && (
-            <button
-              className="btn btn-primary w-100 mt-4"
-              onClick={() => navigate("/choosinghaircut")}
-            >
-              Davom etish
-            </button>
-          )}
-
-          <div className="mt-3">
-            <p className="d-flex justify-content-between align-items-center">
-              <span>
-                <i className="bx bxs-phone"></i> {barber.contact}
-              </span>
-              <span className="d-flex gap-2">
-                {barber.socials.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      src={social.icon}
-                      className="social-icon"
-                      alt={social.name}
-                      style={{ width: "30px", height: "30px" }}
-                    />
-                  </a>
-                ))}
-              </span>
-            </p>
-            <button className="btn btn-outline-primary" onClick={handleBarberSelection}>
-              <i className="bx bx-check-circle"></i>
-            </button>
+                ))
+              ) : (
+                <p className="text-muted">Ertaga mavjud vaqtlar yo'q.</p>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Barber selection button */}
+        <button
+          className={`btn btn-outline-primary ${isSelected ? "disabled" : ""}`}
+          onClick={() => {
+          setIsSelected(true); 
+          setSelectedBarber(barber)
+          }} // Mark the barber as selected
+          disabled={isSelected}
+        >
+          {isSelected ? "Sartarosh tanlandi" : "Tanlash"}
+        </button>
       </div>
     </div>
   );
 };
 
 const BarberList = () => {
-  const { barbersData } = useContext(DatabaseContext);
+  const navigate = useNavigate();
+  const { barbersData } = useContext(DatabaseContext); // Accessing barbers data from context
+  const [go, setGo] = useState(false); // State to control when the button should appear
 
   if (!barbersData || barbersData.length === 0) {
     return <p className="text-center">No barbers available at the moment.</p>;
   }
 
+
   return (
     <div className="row">
       {barbersData.map((barber) => (
-        <BarberCard key={barber.id} barber={barber} />
+        <BarberCard key={barber.id} barber={barber} setGo={setGo} />
       ))}
+      {go && (
+        <div className="text-center mt-4">
+          <button
+            className="btn btn-primary duration-100 "
+            onClick={() => navigate ("/choosinghaircut")}
+          >
+            Davom etish
+          </button>
+        </div>
+      )}
     </div>
   );
-};
-
-
+};;
 
 
 const Barber = () => {
@@ -179,6 +165,10 @@ const Barber = () => {
       times: {
       "08-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30"],
       "09-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
+      "10-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
+      "11-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
+      "12-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
+      "13-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
       },
       contact: "+998 91 234 56 78",
       socials: [
@@ -197,6 +187,10 @@ const Barber = () => {
       times: {
         "08-04-2025": ["10:00", "15:30", "16:30", "17:00", "17:30"],
         "09-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
+        "10-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
+        "11-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
+        "12-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
+        "13-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
         },
       contact: "+998 99 876 54 32",
       socials: [
@@ -215,6 +209,10 @@ const Barber = () => {
       times: {
         "08-04-2025": ["10:00", "11:30", "14:00", "17:00", "17:30"],
         "09-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
+        "10-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
+        "11-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
+        "12-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
+        "13-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
         },
       contact: "+998 94 532 24 56",
       socials: [

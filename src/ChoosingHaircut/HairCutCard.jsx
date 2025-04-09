@@ -13,7 +13,7 @@ const API_DATA = [
     duration: 15,
     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
   },
-  {
+  { 
     id: 2,
     name: "Erkaklar Soch Turmagi",
     description: "Klassik va zamonaviy kesim uslublari.",

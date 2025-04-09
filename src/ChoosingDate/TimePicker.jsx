@@ -10,7 +10,7 @@ function TimePicker({ setChoosenTime, selectedBarber }) {
   const handleTimeSelection = (time) => {
     setSelectedTime(time);
     setChoosenTime(time);
-    setTimeout(() => {
+    setTimeout(() => { 
       toast.success(`Vaqt ${time}`);
     }, 10); // Small delay ensures correct state update
   };

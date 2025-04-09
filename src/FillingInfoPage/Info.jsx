@@ -5,8 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { format, parse } from "date-fns";
 
-const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onUpdate , barbersData}) => {
+const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onUpdate }) => {
   const navigate = useNavigate();
 
   const handleUpdate = (field, value) => {
@@ -15,7 +16,29 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
     }
   };
 
-  const availableTimes = selectedBarber?.times || [];
+  // Convert dd-MM-yyyy to yyyy-MM-dd for input field
+  const inputDateValue = selectedDate
+    ? format(parse(selectedDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd")
+    : "";
+
+  // Handle input field change
+  const handleDateChange = (e) => {
+    // Convert the input value (yyyy-MM-dd) to dd-MM-yyyy
+    const newDate = e.target.value;
+    const formattedDate = format(new Date(newDate), "dd-MM-yyyy");
+    handleUpdate("selectedDate", formattedDate); // Update with dd-MM-yyyy
+  };
+
+  // Retrieve available times for the selected barber and date
+  const rawTimes = selectedBarber?.times?.[selectedDate];
+  const availableTimes = Array.isArray(rawTimes) ? rawTimes : [];
+
+  console.log("selectedDate:", selectedDate);
+  console.log("selectedBarber.times:", selectedBarber?.times);
+  console.log("availableTimes:", availableTimes);
+
+  // Get today's date to disable past dates in the date picker
+  const today = new Date().toISOString().split("T")[0]; // Get today as yyyy-mm-dd
 
   return (
     <div className="w-full bg-white py-6 px-4 mt-24">
@@ -43,10 +66,10 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
           <div className="flex items-center space-x-2">
             <Calendar className="w-5 h-5 text-blue-500" />
             <Input 
-               dateFormat = "DD/MM/YYYY"
                type="date" 
-               value={selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : ""} 
-               onChange={(e) => handleUpdate('selectedDate', e.target.value)} 
+               value={inputDateValue} // Set value in yyyy-MM-dd format for input field
+               min={today} 
+               onChange={handleDateChange} // Handle date change to store in dd-MM-yyyy format
                className="w-36" 
             />
           </div>
@@ -59,9 +82,19 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
                 <SelectValue placeholder={selectedTime || "Vaqt tanlanmagan"} />
               </SelectTrigger>
               <SelectContent>
-                {availableTimes.map((time, index) => (
-                  <SelectItem key={index} value={time}>{time}</SelectItem>
-                ))}
+                {availableTimes.length > 0 ? (
+                  availableTimes
+                    .filter(time => time && time !== "") // Filter out empty strings or undefined
+                    .map((time, index) => (
+                      <SelectItem key={index} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))
+                ) : (
+                  <SelectItem value="no-times" disabled>
+                    No available times
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -94,5 +127,4 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
 export default Info;
 
 
-
-   
+ 
