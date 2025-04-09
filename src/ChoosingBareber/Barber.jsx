@@ -117,7 +117,7 @@ const BarberCard = ({ barber, setGo }) => {
           }} // Mark the barber as selected
           disabled={isSelected}
         >
-          {isSelected ? "Sartarosh tanlandi" : "Tanlash"}
+          {isSelected ? "Boshqa kunni tanlash" : "Boshqa kun tanlanadi"}
         </button>
       </div>
     </div>
