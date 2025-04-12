@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect  } from "react";
 
 export const DatabaseContext = createContext();
 
@@ -17,6 +17,18 @@ export const DatabaseProvider = ({ children }) => {
   console.log(selectedTime);
   console.log(selectedHaircut);
   console.log(barbersData);
+
+
+  const [dataBase, setDatabase] = useState()
+
+
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/hello/')
+      .then((res) => res.json())
+      .then((data) => setDatabase(data.message));
+  }, []);
+  
   
   
   

@@ -17,7 +17,7 @@ const FillingInfo = () => {
 
   return (
     <div>
-      {/* <Nav /> */}
+      <Nav />
       
       <div>
         {/* Ensure selectedBarber is not undefined or null before passing it to Info */}

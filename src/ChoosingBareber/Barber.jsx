@@ -43,6 +43,7 @@ const BarberCard = ({ barber, setGo }) => {
     setSelectedTimeLocal(time);
     setSelectedDateLocal(date); // Store selected date locally
 
+
     setPersonalInfo((prev) => ({
       ...prev,
       selectedBarber: barber,
@@ -74,12 +75,16 @@ const BarberCard = ({ barber, setGo }) => {
               {availableTimesToday.length > 0 ? (
                 availableTimesToday.map((time) => (
                   <button
-                    key={time}
-                    className="btn btn-outline-primary"
-                    onClick={() => handleTimeSelection(time, todayDate)}
-                  >
-                    {time}
-                  </button>
+                  className={`btn ${
+                    selectedTime === time && selectedDate === todayDate
+                      ? "bg-blue-600 text-white"
+                      : "btn-outline-primary"
+                  }`}
+                  onClick={() => handleTimeSelection(time, todayDate)}
+                >
+                  {time}
+                </button>
+                
                 ))
               ) : (
                 <p className="text-muted">Bugun mavjud vaqtlar yo'q.</p>
@@ -133,7 +138,6 @@ const BarberList = () => {
     return <p className="text-center">No barbers available at the moment.</p>;
   }
 
-
   return (
     <div className="row">
       {barbersData.map((barber) => (
@@ -142,8 +146,10 @@ const BarberList = () => {
       {go && (
         <div className="text-center mt-4">
           <button
-            className="btn btn-primary duration-100 "
-            onClick={() => navigate ("/choosinghaircut")}
+            className={`btn btn-primary transform transition-all duration-2000 ease-in-out ${
+              go ? 'opacity-300 -translate-y-30 w-2/3 h-16' : 'opacity-0 translate-y-10'
+            }`}
+            onClick={() => navigate("/choosinghaircut")}
           >
             Davom etish
           </button>
@@ -151,7 +157,11 @@ const BarberList = () => {
       )}
     </div>
   );
-};;
+};
+
+
+
+
 
 
 const Barber = () => {

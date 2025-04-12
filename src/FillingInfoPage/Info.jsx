@@ -18,7 +18,7 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
 
   // Convert dd-MM-yyyy to yyyy-MM-dd for input field
   const inputDateValue = selectedDate
-    ? format(parse(selectedDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd")
+    ? format(parse(selectedDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd") 
     : "";
 
   // Handle input field change
@@ -64,13 +64,13 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
           
           {/* Date Picker */}
           <div className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5 text-blue-500" />
+            <Calendar className="w-fit h-5 text-blue-500" />
             <Input 
                type="date" 
                value={inputDateValue} // Set value in yyyy-MM-dd format for input field
                min={today} 
                onChange={handleDateChange} // Handle date change to store in dd-MM-yyyy format
-               className="w-36" 
+               className="w-fit" 
             />
           </div>
 
@@ -100,9 +100,9 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
           </div>
 
           {/* Haircut Selection Button */}
-          <div className="flex items-center w-full space-x-2">
-            <Scissors className="w-5 h-5 text-red-500" />
-            <Button variant="outline" onClick={() => navigate('/choosinghaircut')} className="w-36">
+          <div className="flex items-center w-fit space-x-2">
+            <Scissors className="w-5 h-5  text-red-500" />
+            <Button variant="outline" onClick={() => navigate('/choosinghaircut')} className="w-fit">
               {selectedHaircut?.name || "Soch turmagi tanlanmagan"}
             </Button>
           </div>
@@ -110,13 +110,15 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
           {/* Price Display */}
           <div className="flex items-center space-x-2">
             <DollarSign className="w-5 h-5 text-yellow-500" />
-            <p className="text-lg font-medium">{selectedHaircut?.price ? `$${selectedHaircut.price}` : "Narx mavjud emas"}</p>
+            <p className="text-lg font-medium mt-3">{selectedHaircut?.price ? `$${selectedHaircut.price}` : "Narx mavjud emas"}</p>
           </div>
 
           {/* Duration Display */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center   space-x-2">
             <Hourglass className="w-5 h-5 text-purple-500" />
-            <p className="text-lg font-medium">{selectedHaircut?.duration ? `${selectedHaircut.duration} min` : "Davomiylik mavjud emas"}</p>
+            <div className="w-[55px] mt-3">
+              <p className="text-lg  font-medium">{selectedHaircut?.duration ? `${selectedHaircut.duration} min` : "Davomiylik mavjud emas"}</p>
+            </div>
           </div>
         </div>
       </div>
