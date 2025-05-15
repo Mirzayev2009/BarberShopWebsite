@@ -8,8 +8,12 @@ const YandexMap = () => {
   useEffect(() => {
     if (window.ymaps && selectedBarber?.location) {
       // Clean up previous map if exists
-      const mapElement = document.getElementById("yandex-map");
-      mapElement.innerHTML = ""; // Remove any previous map content
+   const mapElement = document.getElementById('map-container');
+     if (mapElement) {
+      mapElement.innerHTML = 'Some content';
+      } else {
+          console.error('Map element not found.');
+     }
 
       window.ymaps.ready(() => {
         const map = new window.ymaps.Map("yandex-map", {

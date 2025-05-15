@@ -8,7 +8,7 @@ const FinalPage = () => {
     <div>
       <Nav/>
       <BookingConfirmation/>
-     </div>
+     </div> 
   )
 }
 

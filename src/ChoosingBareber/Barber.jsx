@@ -12,8 +12,8 @@ const BarberCard = ({ barber, setGo }) => {
   const [selectedDate, setSelectedDateLocal] = useState(""); // Local state for selected date
 
   // Function to format the date to "dd-mm-yyyy" format
-  const formatDate = (date) => {
-    const dd = String(date.getDate()).padStart(2, "0");
+  const formatDate = (date) => { 
+    const dd = String(date.getDate()).padStart(2, "0"); 
     const mm = String(date.getMonth() + 1).padStart(2, "0");
     const yyyy = date.getFullYear();
     return `${dd}-${mm}-${yyyy}`;
@@ -129,18 +129,17 @@ const BarberCard = ({ barber, setGo }) => {
   );
 };
 
-const BarberList = () => {
+const BarberList = ({ barbers }) => {
   const navigate = useNavigate();
-  const { barbersData } = useContext(DatabaseContext); // Accessing barbers data from context
-  const [go, setGo] = useState(false); // State to control when the button should appear
+  const [go, setGo] = useState(false);
 
-  if (!barbersData || barbersData.length === 0) {
+  if (!barbers || barbers.length === 0) {
     return <p className="text-center">No barbers available at the moment.</p>;
   }
 
   return (
     <div className="row">
-      {barbersData.map((barber) => (
+      {barbers.map((barber) => (
         <BarberCard key={barber.id} barber={barber} setGo={setGo} />
       ))}
       {go && (
@@ -165,82 +164,8 @@ const BarberList = () => {
 
 
 const Barber = () => {
-  const { setBarbersData } = useContext(DatabaseContext);
-
-  const barbersData = [
-    {
-      name: "Aslbek Abdullayev",
-      image: "https://example.com/barber1.jpg",
-      reviews: 45,
-      times: {
-      "08-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30"],
-      "09-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
-      "10-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
-      "11-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
-      "12-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
-      "13-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "17:30", "19:00", "20:00"],
-      },
-      contact: "+998 91 234 56 78",
-      socials: [
-        {
-          name: "Instagram",
-          link: "https://instagram.com/aslbek_abdullayev",
-          icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
-        },
-      ],
-      location: [41.311081, 69.240562], // Adding the location here
-    },
-    {
-      name: "Axmadjon Orziqulov",
-      image: "https://example.com/barber2.jpg",
-      reviews: 30,
-      times: {
-        "08-04-2025": ["10:00", "15:30", "16:30", "17:00", "17:30"],
-        "09-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
-        "10-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
-        "11-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
-        "12-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
-        "13-04-2025": ["10:00", "11:30",  "16:30", "17:00", "17:30", "19:00", "20:00"],
-        },
-      contact: "+998 99 876 54 32",
-      socials: [
-        {
-          name: "Instagram",
-          link: "https://instagram.com/axmadjon_orziqulov",
-          icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
-        },
-      ],
-      location: [41.2995, 69.2401], // Adding the location here
-    },
-    {
-      name: "Shohrux Hamraqulov",
-      image: "https://example.com/barber3.jpg",
-      reviews: 25,
-      times: {
-        "08-04-2025": ["10:00", "11:30", "14:00", "17:00", "17:30"],
-        "09-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
-        "10-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
-        "11-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
-        "12-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
-        "13-04-2025": ["10:00", "11:30", "14:00", "15:30", "16:30", "17:00", "20:00"],
-        },
-      contact: "+998 94 532 24 56",
-      socials: [
-        {
-          name: "Instagram",
-          link: "https://instagram.com/shohrux_hamraqulov",
-          icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
-        },
-      ],
-      location: [41.310000, 69.250000], // Adding the location here
-    },
-  ];
-
-  useEffect(() => {
-    setBarbersData(barbersData);
-  }, [setBarbersData]);
-
-  return <BarberList barbers={barbersData} />;
+  const { dataBase } = useContext(DatabaseContext);
+  return <BarberList barbers={dataBase} />;
 };
 
 export default Barber;

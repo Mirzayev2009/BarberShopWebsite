@@ -9,32 +9,31 @@ export const DatabaseProvider = ({ children }) => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [cancellationReason, setCancellationReason] = useState("");
   const [personalInfo, setPersonalInfo] = useState(null); // Add this state
-  const [barbersData, setBarbersData] = useState([])
-  console.log(cancellationReason);
-  console.log(personalInfo);
-  console.log(selectedBarber);
-  console.log(selectedDate);
-  console.log(selectedTime);
-  console.log(selectedHaircut);
-  console.log(barbersData);
+  
+  const [dataBase, setDatabase] = useState([]);
+  const URL = "http://192.168.1.136:8000/api/barbers";
+   
+    useEffect(() => { 
+      async function fetchData() {
+        try {
+          const res = await fetch(URL);
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          const data = await res.json();
+          setDatabase(data);
+        } catch (error) {
+          console.error("Error fetching database:", error);
+        }
+      }
+      fetchData();
+    }, []);
+    
+  
+    console.log(dataBase);
+  
 
 
-  const [dataBase, setDatabase] = useState()
-
-
-
-  useEffect(() => {
-    fetch('http://localhost:8000/api/hello/')
-      .then((res) => res.json())
-      .then((data) => setDatabase(data.message));
-  }, []);
-  
-  
-  
-  
-  
-  
-  
   
   return (
     <DatabaseContext.Provider
@@ -51,8 +50,8 @@ export const DatabaseProvider = ({ children }) => {
         setCancellationReason,
         personalInfo,
         setPersonalInfo, 
-        barbersData,
-        setBarbersData
+        dataBase,
+        setDatabase
       }}
     >
       {children}

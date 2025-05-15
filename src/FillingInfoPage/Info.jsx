@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { format, parse } from "date-fns";
-
 const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onUpdate }) => {
   const navigate = useNavigate();
 
@@ -16,9 +15,11 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
     }
   };
 
-  // Convert dd-MM-yyyy to yyyy-MM-dd for input field
+  // Inside your component
   const inputDateValue = selectedDate
-    ? format(parse(selectedDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd") 
+    ? typeof selectedDate === "string"
+      ? format(parse(selectedDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd")
+      : format(selectedDate, "yyyy-MM-dd")
     : "";
 
   // Handle input field change
@@ -39,6 +40,9 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
 
   // Get today's date to disable past dates in the date picker
   const today = new Date().toISOString().split("T")[0]; // Get today as yyyy-mm-dd
+
+
+
 
   return (
     <div className="w-full bg-white py-6 px-4 mt-24">
