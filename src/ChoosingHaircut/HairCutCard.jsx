@@ -2,6 +2,7 @@ import { SonnerDemo } from "@/components/Sonner";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 const API_DATA = [
   {
@@ -94,26 +95,33 @@ const HaircutList = ({ setChoosenHaircut }) => {
   {/* Haircuts List */}
   <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     {filteredHaircuts.length > 0 ? (
-      filteredHaircuts.map((haircut) => (
-        <div
+      filteredHaircuts.map((haircut, index) => (
+        <motion.div
           key={haircut.id}
           className="col"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: index * 0.1 }}
         >
-          <div className="card shadow-lg border-0 rounded-3">
-            {/* Title & Price Section */}
+          <motion.div
+            className="card shadow-lg border-0 rounded-3"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            {/* Title */}
             <div className="card-body">
               <h5 className="card-title">{haircut.name}</h5>
             </div>
 
-            {/* Image Section */}
-            <div className="position-relative">
+            {/* Image */}
+            <motion.div whileHover={{ scale: 1.03 }} className="position-relative">
               <img
                 src={haircut.imageUrl || "https://via.placeholder.com/400x150"}
                 alt={haircut.name}
                 className="card-img-top w-100 h-100 object-cover rounded-top"
-                style={{ height: '200px' }}
+                style={{ height: '200px', objectFit: 'cover' }}
               />
-            </div>
+            </motion.div>
 
             {/* Description & Price */}
             <div className="card-body">
@@ -136,17 +144,15 @@ const HaircutList = ({ setChoosenHaircut }) => {
                 Soch-turmakni tanlang
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       ))
     ) : (
       <p className="text-center text-muted">Mos keluvchi natijalar topilmadi.</p>
     )}
   </div>
-
-  {/* ✅ Moved SonnerDemo outside of .map() loop */}
-  <SonnerDemo />
 </div>
+
 
   );
 };

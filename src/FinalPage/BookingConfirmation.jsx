@@ -1,10 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { DatabaseContext } from "@/context/DatabaseContext";
-import YandexMap from "@/components/YandexMap";
+import { DatabaseContext } from '@/DataBase';
+import YandexMap from "./Yandex"
+import { motion } from "framer-motion";
 
 const BookingConfirmation = () => {
   const {
@@ -58,7 +59,7 @@ const BookingConfirmation = () => {
     };
 
     try {
-      const response = await fetch("https://your-backend-api.com/book", {
+      const response = await fetch("http://192.168.1.136:8000/api/bookings/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,6 +79,11 @@ const BookingConfirmation = () => {
       return false;
     }
   };
+
+useEffect(() => {
+  sendBookingToAPI();
+}, []);
+
 
   const handleNewBooking = async () => {
     setSelectedDate(newDate);
@@ -99,143 +105,202 @@ const BookingConfirmation = () => {
   })();
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-center">Booking Confirmation</h1>
+  <div className="max-w-5xl mx-auto p-6 space-y-8">
+    <motion.h1
+      className="text-4xl font-bold text-center"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      Booking Confirmation
+    </motion.h1>
 
-      {/* Barber Info */}
-      {selectedBarber && (
-        <div className="border p-4 rounded-lg shadow bg-white">
-          <h2 className="text-2xl font-semibold mb-2">Barber</h2>
-          <div className="flex items-center gap-4">
-            {selectedBarber.imageUrl && (
-              <img src={selectedBarber.imageUrl} alt={selectedBarber.name} className="w-24 h-24 rounded-full object-cover" />
-            )}
-            <div>
-              <p className="font-medium">{selectedBarber.name}</p>
-              <p className="text-sm text-gray-600">{selectedBarber.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Haircut Info */}
-      {selectedHaircut && (
-        <div className="border p-4 rounded-lg shadow bg-white space-y-2">
-          <h2 className="text-2xl font-semibold">Haircut</h2>
-          {Array.isArray(selectedHaircut) ? (
-            selectedHaircut.map((haircut) => (
-              <div key={haircut.id} className="space-y-1">
-                <p className="font-medium">{haircut.name}</p>
-                <p>{haircut.description}</p>
-                <p>{haircut.price} USD</p>
-              </div>
-            ))
-          ) : (
-            <>
-              <p className="font-medium">{selectedHaircut.name}</p>
-              <p>{selectedHaircut.description}</p>
-              <p>{selectedHaircut.price} USD</p>
-              {selectedHaircut.discountPrice && (
-                <p className="text-green-600">Discounted: {selectedHaircut.discountPrice} USD</p>
-              )}
-              <p>Duration: {selectedHaircut.duration} minutes</p>
-              {selectedHaircut.imageUrl && (
-                <img src={selectedHaircut.imageUrl} alt={selectedHaircut.name} className="w-full rounded-lg" />
-              )}
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Date and Time */}
-      <div className="border p-4 rounded-lg shadow bg-white space-y-2">
-        <h2 className="text-2xl font-semibold">Date & Time</h2>
-        <p>Date: {formattedDate}</p>
-        <p>Time: {selectedTime || "Not selected"}</p>
-      </div>
-
-      {/* Contact Info */}
-      <div className="border p-4 rounded-lg shadow bg-white space-y-2">
-        <h2 className="text-2xl font-semibold">Contact Info</h2>
-        <p>Name: {personalInfo?.name || "Not provided"}</p>
-        <p>Email: {personalInfo?.email || "Not provided"}</p>
-        <p>Phone: {personalInfo?.phone || "Not provided"}</p>
-      </div>
-
-      {/* Map */}
-      <div className="border p-4 rounded-lg shadow bg-white space-y-4">
-        <h2 className="text-2xl font-semibold">Location</h2>
-        <YandexMap />
-      </div>
-
-      {/* Cancel Booking */}
-      <div className="flex flex-wrap gap-4 justify-center">
-        <Button variant="outline" onClick={handleUnbook}>
-          Cancel Booking
-        </Button>
-      </div>
-
-      {/* Cancel Reason */}
-      {isUnbooking && (
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold mb-2">Why are you cancelling?</h3>
-          <select
-            value={unbookingReason}
-            onChange={(e) => setUnbookingReason(e.target.value)}
-            className="w-full p-2 border rounded mb-3"
-          >
-            <option value="">Select a reason</option>
-            <option value="changed-mind">Changed my mind</option>
-            <option value="not-available">Not available on this date</option>
-            <option value="found-another">Found another barber</option>
-            <option value="other">Other</option>
-          </select>
-          {unbookingReason === "other" && (
-            <Textarea
-              placeholder="Please specify your reason"
-              value={unbookingReason}
-              onChange={(e) => setUnbookingReason(e.target.value)}
+    {/* Barber Info */}
+    {selectedBarber && (
+      <motion.div
+        className="border p-6 rounded-xl shadow-md bg-white"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h2 className="text-2xl font-semibold mb-4">Barber</h2>
+        <div className="flex items-center gap-6">
+          {selectedBarber.imageUrl && (
+            <img
+              src={selectedBarber.imageUrl}
+              alt={selectedBarber.name}
+              className="w-28 h-28 rounded-full object-cover border-2 border-gray-300 shadow"
             />
           )}
-          <div className="flex gap-2 mt-2">
-            <Button onClick={confirmUnbooking} disabled={!unbookingReason}>
-              Confirm Cancel
-            </Button>
-            <Button variant="ghost" onClick={() => setIsUnbooking(false)}>
-              Go Back
-            </Button>
+          <div>
+            <p className="text-lg font-medium">{selectedBarber.name}</p>
+            <p className="text-sm text-gray-600">{selectedBarber.description}</p>
           </div>
         </div>
-      )}
+      </motion.div>
+    )}
 
-      {/* Rebooking Section */}
-      <div className="border p-4 rounded-lg shadow bg-white space-y-4">
-        <h2 className="text-2xl font-semibold">Rebook</h2>
-        <div className="space-y-3">
-          <input
-            type="date"
-            value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-            className="w-full border rounded p-2"
+    {/* Haircut Info */}
+    {selectedHaircut && (
+      <motion.div
+        className="border p-6 rounded-xl shadow-md bg-white space-y-3"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        <h2 className="text-2xl font-semibold">Haircut</h2>
+        {Array.isArray(selectedHaircut) ? (
+          selectedHaircut.map((haircut) => (
+            <div key={haircut.id} className="space-y-1">
+              <p className="text-lg font-medium">{haircut.name}</p>
+              <p className="text-gray-600">{haircut.description}</p>
+              <p className="font-semibold">{haircut.price} USD</p>
+            </div>
+          ))
+        ) : (
+          <>
+            <p className="text-lg font-medium">{selectedHaircut.name}</p>
+            <p className="text-gray-600">{selectedHaircut.description}</p>
+            <p className="font-semibold">{selectedHaircut.price} USD</p>
+            {selectedHaircut.discountPrice && (
+              <p className="text-green-600 font-semibold">
+                Discounted: {selectedHaircut.discountPrice} USD
+              </p>
+            )}
+            <p className="text-sm text-gray-500">Duration: {selectedHaircut.duration} minutes</p>
+            {selectedHaircut.imageUrl && (
+              <img
+                src={selectedHaircut.imageUrl}
+                alt={selectedHaircut.name}
+                className="w-full rounded-lg mt-2 shadow"
+              />
+            )}
+          </>
+        )}
+      </motion.div>
+    )}
+
+    {/* Date & Time */}
+    <motion.div
+      className="border p-6 rounded-xl shadow-md bg-white space-y-2"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.2 }}
+    >
+      <h2 className="text-2xl font-semibold">Date & Time</h2>
+      <p>Date: <span className="font-medium">{formattedDate}</span></p>
+      <p>Time: <span className="font-medium">{selectedTime || "Not selected"}</span></p>
+    </motion.div>
+    {/* Contact Info */}
+    <motion.div
+      className="border p-6 rounded-xl shadow-md bg-white space-y-2"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.3 }}
+    >
+      <h2 className="text-2xl font-semibold">Contact Info</h2>
+      <p>Name: <span className="font-medium">{personalInfo?.name || "Not provided"}</span></p>
+      <p>Email: <span className="font-medium">{personalInfo?.email || "Not provided"}</span></p>
+      <p>Phone: <span className="font-medium">{personalInfo?.phone || "Not provided"}</span></p>
+    </motion.div>
+
+    {/* Map */}
+    <motion.div
+      className="border p-6 rounded-xl shadow-md bg-white space-y-4"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.4 }}
+    >
+      <h2 className="text-2xl font-semibold">Location</h2>
+      <YandexMap />
+    </motion.div>
+
+    {/* Cancel Booking Button */}
+    <motion.div
+      className="flex justify-center"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: 0.5 }}
+    >
+      <Button variant="outline" onClick={handleUnbook}>
+        Cancel Booking
+      </Button>
+    </motion.div>
+
+    {/* Cancel Reason */}
+    {isUnbooking && (
+      <motion.div
+        className="bg-gray-50 p-6 rounded-xl shadow-md space-y-4"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <h3 className="text-xl font-semibold">Why are you cancelling?</h3>
+        <select
+          value={unbookingReason}
+          onChange={(e) => setUnbookingReason(e.target.value)}
+          className="w-full p-3 border rounded-lg"
+        >
+          <option value="">Select a reason</option>
+          <option value="changed-mind">Changed my mind</option>
+          <option value="not-available">Not available on this date</option>
+          <option value="found-another">Found another barber</option>
+          <option value="other">Other</option>
+        </select>
+
+        {unbookingReason === "other" && (
+          <textarea
+            className="w-full p-3 border rounded-lg"
+            placeholder="Please specify your reason"
+            value={unbookingReason}
+            onChange={(e) => setUnbookingReason(e.target.value)}
           />
-          <select
-            value={newTime}
-            onChange={(e) => setNewTime(e.target.value)}
-            className="w-full border rounded p-2"
-          >
-            <option value="">Select a time</option>
-            {availableTimes.map((time) => (
-              <option key={time} value={time}>{time}</option>
-            ))}
-          </select>
-          <Button onClick={handleNewBooking} disabled={!newDate || !newTime}>
-            Book Again
+        )}
+
+        <div className="flex flex-wrap gap-3">
+          <Button onClick={confirmUnbooking} disabled={!unbookingReason}>
+            Confirm Cancel
+          </Button>
+          <Button variant="ghost" onClick={() => setIsUnbooking(false)}>
+            Go Back
           </Button>
         </div>
+      </motion.div>
+    )}
+
+    {/* Rebooking Section */}
+    <motion.div
+      className="border p-6 rounded-xl shadow-md bg-white space-y-4"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.6 }}
+    >
+      <h2 className="text-2xl font-semibold">Rebook</h2>
+      <div className="space-y-3">
+        <input
+          type="date"
+          value={newDate}
+          onChange={(e) => setNewDate(e.target.value)}
+          className="w-full border rounded-lg p-3"
+        />
+        <select
+          value={newTime}
+          onChange={(e) => setNewTime(e.target.value)}
+          className="w-full border rounded-lg p-3"
+        >
+          <option value="">Select a time</option>
+          {availableTimes.map((time) => (
+            <option key={time} value={time}>{time}</option>
+          ))}
+        </select>
+        <Button onClick={handleNewBooking} disabled={!newDate || !newTime}>
+          Book Again
+        </Button>
       </div>
-    </div>
-  );
-};
+    </motion.div>
+  </div>
+);
+}
 
 export default BookingConfirmation;
 

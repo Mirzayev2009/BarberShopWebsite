@@ -1,11 +1,12 @@
-
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
+
 function TimePicker({ setChoosenTime, selectedBarber, selectedDate }) {
   const [selectedTime, setSelectedTime] = useState(null);
 
-  // Format date to match object keys
-  const formattedDate = selectedDate?.toISOString().split("T")[0]; // "2025-04-09"
-  const times = (selectedBarber.times?.[formattedDate]) || [];
+  const formattedDate = selectedDate?.toISOString().split("T")[0];
+  const times = selectedBarber?.times?.[formattedDate] || [];
 
   const handleTimeSelection = (time) => {
     setSelectedTime(time);
@@ -16,24 +17,32 @@ function TimePicker({ setChoosenTime, selectedBarber, selectedDate }) {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-8">
+    <motion.div
+      className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-8"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <h2 className="text-xl font-semibold mb-4">Aniq vaqtni tanlang</h2>
 
       {times.length > 0 ? (
         <div className="mb-4 w-full text-xl">
           <div className="grid grid-cols-3 gap-3">
             {times.map((time) => (
-              <button
+              <motion.button
                 key={time}
-                className={`p-3 text-xl rounded-lg transition ${
+                className={`p-3 text-xl rounded-lg transition-colors duration-300 ${
                   selectedTime === time
-                    ? "bg-blue-600 text-white"
+                    ? "bg-blue-600 text-white shadow-lg"
                     : "bg-gray-100 hover:bg-gray-300"
                 }`}
                 onClick={() => handleTimeSelection(time)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                layout
               >
                 {time}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -41,12 +50,17 @@ function TimePicker({ setChoosenTime, selectedBarber, selectedDate }) {
         <p className="text-gray-500 text-lg">Bu kunda mavjud vaqtlar yo‘q</p>
       )}
 
-      <p className="mt-4 text-lg text-center text-gray-600">
+      <motion.p
+        className="mt-4 text-lg text-center text-gray-600"
+        key={selectedTime}
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         {selectedTime ? `Tanlangan vaqt: ${selectedTime}` : "Aniq vaqt tanlang"}
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
   );
 }
- 
 
-export default TimePicker
+export default TimePicker;
