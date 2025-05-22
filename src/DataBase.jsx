@@ -11,7 +11,7 @@ export const DatabaseProvider = ({ children }) => {
   const [personalInfo, setPersonalInfo] = useState(null); // Add this state
   
   const [dataBase, setDatabase] = useState([]);
-  const URL = "http://192.168.1.136:8000/api/barbers";
+  const URL = "http://192.168.1.136:8000/barbers";
    
     useEffect(() => { 
       async function fetchData() {

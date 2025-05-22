@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { DatabaseContext } from '@/DataBase';
 import YandexMap from "./Yandex"
 import { motion } from "framer-motion";
@@ -45,44 +44,47 @@ const BookingConfirmation = () => {
     navigate("/");
   };
 
-  const sendBookingToAPI = async () => {
-    const bookingData = {
-      name: personalInfo?.name,
-      email: personalInfo?.email,
-      phone: personalInfo?.phone,
-      barber: selectedBarber?.name,
-      haircut: Array.isArray(selectedHaircut)
-        ? selectedHaircut.map((h) => h.name).join(", ")
-        : selectedHaircut?.name,
-      date: selectedDate,
-      time: selectedTime,
-    };
+ const sendBookingToAPI = async () => {
+  const bookingData = {
+    name: personalInfo?.name,
+    email: personalInfo?.email,
+    phone: personalInfo?.phone,
+    barber: selectedBarber?.name,
+    haircut: Array.isArray(selectedHaircut)
+      ? selectedHaircut.map((h) => h.name).join(", ")
+      : selectedHaircut?.name,
+    date: selectedDate,
+    time: selectedTime,
+  };
+  console.log(bookingData);
+  
 
-    try {
-      const response = await fetch("http://192.168.1.136:8000/api/bookings/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingData),
-      });
+  try {
+    const response = await fetch('http://192.168.1.136:8000/bookings/all/', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bookingData),
+    });
 
-      if (response.ok) {
-        console.log("Booking sent successfully!");
-        return true;
-      } else {
-        console.error("Failed to send booking:", response.status);
-        return false;
-      }
-    } catch (error) {
-      console.error("Error sending booking:", error);
+    if (response.ok) {
+      console.log("Booking sent successfully!");
+      return true;
+    } else {
+      console.error("Failed to send booking:", response.status);
       return false;
     }
-  };
+  } catch (error) {
+    console.error("Error sending booking:", error);
+    return false;
+  }
+};
 
 useEffect(() => {
   sendBookingToAPI();
 }, []);
+
 
 
   const handleNewBooking = async () => {
