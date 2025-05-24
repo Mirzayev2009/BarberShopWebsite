@@ -1,66 +1,69 @@
-import { SonnerDemo } from "@/components/Sonner";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
+// import { DatabaseContext } from "@/DataBase";
 
-const API_DATA = [
-  {
-    id: 1,
-    name: "Sochni Vosk Bilan Olib Tashlash",
-    description: "Uzoq muddat davomida silliq va toza natija beradi.",
-    price: 1400,
-    discountPrice: 500,
-    duration: 15,
-    imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-  },
-  { 
-    id: 2,
-    name: "Erkaklar Soch Turmagi",
-    description: "Klassik va zamonaviy kesim uslublari.",
-    price: 2000,
-    discountPrice: 1500,
-    duration: 30,
-    imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-  },
-  {
-    id: 3,
-    name: "Farzandlar Uchun Soch Turmagi",
-    description: "Bolalar uchun qulay va zamonaviy soch kesimi.",
-    price: 1200,
-    discountPrice: 900,
-    duration: 25,
-    imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-  },
-  {
-    id: 4,
-    name: "Qalin Sochlar Uchun Model Kesish",
-    description: "Qalin va uzun sochlar uchun maxsus xizmat.",
-    price: 2500,
-    discountPrice: 2000,
-    duration: 40,
-    imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-  },
-  {
-    id: 5,
-    name: "Soch Uchlarini Silliqlash",
-    description: "Sochlarni parvarish qilish va uchlarini yumshoq qilish.",
-    price: 1000,
-    discountPrice: 700,
-    duration: 20,
-    imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-  }
-];
+// const API_DATA = [
+//   {
+//     id: 1,
+//     name: "Sochni Vosk Bilan Olib Tashlash",
+//     description: "Uzoq muddat davomida silliq va toza natija beradi.",
+//     price: 1400,
+//     discountPrice: 500,
+//     duration: 15,
+//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
+//   },
+//   { 
+//     id: 2,
+//     name: "Erkaklar Soch Turmagi",
+//     description: "Klassik va zamonaviy kesim uslublari.",
+//     price: 2000,
+//     discountPrice: 1500,
+//     duration: 30,
+//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
+//   },
+//   {
+//     id: 3,
+//     name: "Farzandlar Uchun Soch Turmagi",
+//     description: "Bolalar uchun qulay va zamonaviy soch kesimi.",
+//     price: 1200,
+//     discountPrice: 900,
+//     duration: 25,
+//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
+//   },
+//   {
+//     id: 4,
+//     name: "Qalin Sochlar Uchun Model Kesish",
+//     description: "Qalin va uzun sochlar uchun maxsus xizmat.",
+//     price: 2500,
+//     discountPrice: 2000,
+//     duration: 40,
+//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
+//   },
+//   {
+//     id: 5,
+//     name: "Soch Uchlarini Silliqlash",
+//     description: "Sochlarni parvarish qilish va uchlarini yumshoq qilish.",
+//     price: 1000,
+//     discountPrice: 700,
+//     duration: 20,
+//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
+//   }
+// ];
 
 const HaircutList = ({ setChoosenHaircut }) => {
   const [haircuts, setHaircuts] = useState([]);
+
+  const {haircutData} = useContext(DatabaseContext)
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     // Simulating API call delay
     setTimeout(() => {
-      setHaircuts(API_DATA);
+      // setHaircuts(API_DATA);
+      setHaircuts(haircutData)
     }, 500);
   }, []);
 

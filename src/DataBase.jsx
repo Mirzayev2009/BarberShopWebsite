@@ -11,6 +11,7 @@ export const DatabaseProvider = ({ children }) => {
   const [personalInfo, setPersonalInfo] = useState(null); // Add this state
   
   const [dataBase, setDatabase] = useState([]);
+  const[haircutData, setHaircutData] = useState([])
   const URL = "http://192.168.1.136:8000/barbers";
    
     useEffect(() => { 
@@ -27,6 +28,24 @@ export const DatabaseProvider = ({ children }) => {
         }
       }
       fetchData();
+    }, []);
+
+      const URL2 = "http://192.168.1.136:8000/haircutlist";
+   
+    useEffect(() => { 
+      async function fetchDataN2() {
+        try {
+          const res = await fetch(URL2);
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          const data = await res.json();
+          setHaircutData(data);
+        } catch (error) {
+          console.error("Error fetching haircutdata:", error);
+        }
+      }
+      fetchDataN2();
     }, []);
     
   

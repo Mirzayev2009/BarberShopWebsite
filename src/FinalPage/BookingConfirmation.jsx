@@ -49,18 +49,18 @@ const BookingConfirmation = () => {
     name: personalInfo?.name,
     email: personalInfo?.email,
     phone: personalInfo?.phone,
-    barber: selectedBarber?.name,
+    barber: selectedBarber?.id,
     haircut: Array.isArray(selectedHaircut)
-      ? selectedHaircut.map((h) => h.name).join(", ")
-      : selectedHaircut?.name,
+      ? selectedHaircut.map((h) => h.id)
+      : selectedHaircut?.id,
     date: selectedDate,
     time: selectedTime,
   };
-  console.log(bookingData);
-  
+
+  console.log("Booking to send:", bookingData);
 
   try {
-    const response = await fetch('http://192.168.1.136:8000/bookings/all/', {
+    const response = await fetch('http://192.168.1.136:8000/bookings/create/', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +72,8 @@ const BookingConfirmation = () => {
       console.log("Booking sent successfully!");
       return true;
     } else {
-      console.error("Failed to send booking:", response.status);
+      const errorData = await response.json();
+      console.error("Failed to send booking:", response.status, errorData);
       return false;
     }
   } catch (error) {
@@ -80,6 +81,7 @@ const BookingConfirmation = () => {
     return false;
   }
 };
+
 
 useEffect(() => {
   sendBookingToAPI();
