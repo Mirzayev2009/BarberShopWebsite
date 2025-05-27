@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-// import { motion } from "framer-motion";
-// import { DatabaseContext } from "@/DataBase";
+import { motion } from "framer-motion";
+import { DatabaseContext } from "@/DataBase";
 
 // const API_DATA = [
 //   {
@@ -68,11 +68,10 @@ const HaircutList = ({ setChoosenHaircut }) => {
   }, []);
 
   // Filter haircuts based on search input
-  const filteredHaircuts = haircuts.filter((haircut) =>
+  const filteredHaircuts = haircuts.filter((haircut)=>
     haircut.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     haircut.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
+  )
   const handleHaircutSelection = (haircut) => {
     setChoosenHaircut(haircut);
     navigate("/fillinginfopage");

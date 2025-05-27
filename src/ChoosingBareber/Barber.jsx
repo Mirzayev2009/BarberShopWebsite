@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { DatabaseContext } from "../Database";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+// import { newDate } from "react-datepicker/dist/date_utils";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -16,26 +17,35 @@ const BarberCard = ({ barber, setGo }) => {
   const [selectedTime, setSelectedTimeLocal] = useState(null);
   const [selectedDate, setSelectedDateLocal] = useState("");
 
-  const formatDate = (date) => {
+
+  const formatDate = (date)=> {
     const dd = String(date.getDate()).padStart(2, "0");
     const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const yyyy = date.getFullYear();
-    return `${dd}-${mm}-${yyyy}`;
-  };
+    const yyyy = date.getFullYear()
 
-  const today = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
+    return `${dd}-${mm}-${yyyy}`
+  }
 
-  const todayDate = formatDate(today);
-  const tomorrowDate = formatDate(tomorrow);
+  const today = new Date()
+  const tomorrow = new Date()
+  tomorrow.setDate(today.getDate() + 1)
 
-  useEffect(() => {
-    if (barber && barber.times) {
+  const todayDate = formatDate(today)
+  const tomorrowDate = formatDate(tomorrow)
+
+  // useEffect(() => {
+  //   if (barber && barber.times) {
+  //     setAvailableTimesToday(barber.times[todayDate] || []);
+  //     setAvailableTimesTomorrow(barber.times[tomorrowDate] || []);
+  //   }
+  // }, [barber, todayDate, tomorrowDate]);
+
+  useEffect(()=>{
+    if(barber && barber.times) {
       setAvailableTimesToday(barber.times[todayDate] || []);
-      setAvailableTimesTomorrow(barber.times[tomorrowDate] || []);
+      setAvailableTimesTomorrow(barber.times[tomorrowDate] || [])
     }
-  }, [barber, todayDate, tomorrowDate]);
+  }, [barber, todayDate, tomorrowDate])
 
   const handleTimeSelection = (time, date) => {
     setSelectedDate(date);

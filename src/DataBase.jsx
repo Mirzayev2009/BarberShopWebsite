@@ -12,7 +12,7 @@ export const DatabaseProvider = ({ children }) => {
   
   const [dataBase, setDatabase] = useState([]);
   const[haircutData, setHaircutData] = useState([])
-  const URL = "http://192.168.1.136:8000/barbers";
+  const URL = "http://192.168.1.136:8000/barbers-list";
    
     useEffect(() => { 
       async function fetchData() {
@@ -30,7 +30,10 @@ export const DatabaseProvider = ({ children }) => {
       fetchData();
     }, []);
 
-      const URL2 = "http://192.168.1.136:8000/haircutlist";
+    console.log(dataBase);
+    
+
+    const URL2 = "http://192.168.1.136:8000/haircuts-list";
    
     useEffect(() => { 
       async function fetchDataN2() {
@@ -48,8 +51,8 @@ export const DatabaseProvider = ({ children }) => {
       fetchDataN2();
     }, []);
     
-  
-    console.log(dataBase);
+    console.log(haircutData);
+    
   
 
 
@@ -70,7 +73,9 @@ export const DatabaseProvider = ({ children }) => {
         personalInfo,
         setPersonalInfo, 
         dataBase,
-        setDatabase
+        setDatabase,
+        haircutData,
+        setHaircutData
       }}
     >
       {children}
