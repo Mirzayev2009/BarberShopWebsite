@@ -12,6 +12,7 @@ export const DatabaseProvider = ({ children }) => {
   
   const [dataBase, setDatabase] = useState([]);
   const[haircutData, setHaircutData] = useState([])
+  const [availableTimes, setAvailableTimes] = useState([])
   const URL = "http://192.168.1.136:8000/barbers-list";
    
     useEffect(() => { 
@@ -52,6 +53,28 @@ export const DatabaseProvider = ({ children }) => {
     }, []);
     
     console.log(haircutData);
+
+    const URL3 = "http://192.168.1.136:8000/availabletimes" 
+
+    useEffect(()=>{
+      async function FetchDataN3() {
+        try{
+          const res = await fetch(URL3)
+          if(!res.ok){
+            throw new Error(`HTTP error! Status: ${res.status}`)
+          }
+          const data = await res.json()
+          setAvailableTimes(data)
+        }
+        catch(error){
+          console.error("Error fetching availabletimes:", error);
+          
+        }
+      }
+      FetchDataN3()
+    }, [])
+
+    console.log(availableTimes);
     
   
 
@@ -75,7 +98,9 @@ export const DatabaseProvider = ({ children }) => {
         dataBase,
         setDatabase,
         haircutData,
-        setHaircutData
+        setHaircutData,
+        availableTimes,
+        setAvailableTimes
       }}
     >
       {children}

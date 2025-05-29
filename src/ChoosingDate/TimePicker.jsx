@@ -2,18 +2,19 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
-function TimePicker({ setChoosenTime, selectedBarber, selectedDate }) {
+function TimePicker({ setChoosenTime, selectedBarber, selectedDate, availableTimes }) {
   const [selectedTime, setSelectedTime] = useState(null);
 
-  const formattedDate = selectedDate?.toISOString().split("T")[0];
-  const times = selectedBarber?.times?.[formattedDate] || [];
+  const formattedDate = selectedDate?.toISOString().split('T')[0]
+  const times = availableTimes?.[formattedDate] || []
+
+
+ 
 
   const handleTimeSelection = (time) => {
     setSelectedTime(time);
     setChoosenTime(time);
-    setTimeout(() => {
-      toast.success(`Vaqt ${time}`);
-    }, 10);
+    toast.success(`Vaqt tanlandi: ${time}`);
   };
 
   return (
@@ -27,7 +28,7 @@ function TimePicker({ setChoosenTime, selectedBarber, selectedDate }) {
 
       {times.length > 0 ? (
         <div className="mb-4 w-full text-xl">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {times.map((time) => (
               <motion.button
                 key={time}
@@ -36,6 +37,7 @@ function TimePicker({ setChoosenTime, selectedBarber, selectedDate }) {
                     ? "bg-blue-600 text-white shadow-lg"
                     : "bg-gray-100 hover:bg-gray-300"
                 }`}
+                aria-pressed={selectedTime === time}
                 onClick={() => handleTimeSelection(time)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

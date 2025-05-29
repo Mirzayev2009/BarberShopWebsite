@@ -9,7 +9,7 @@ const fadeInUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const BarberCard = ({ barber, setGo }) => {
+const BarberCard = ({ barber, setGo, availableTimes, setAvailableTimes }) => {
   const { setSelectedBarber, setSelectedTime, setSelectedDate, setPersonalInfo } = useContext(DatabaseContext);
   const [isSelected, setIsSelected] = useState(false);
   const [availableTimesToday, setAvailableTimesToday] = useState([]);
@@ -148,7 +148,7 @@ const BarberCard = ({ barber, setGo }) => {
   );
 };
 
-const BarberList = ({ barbers }) => {
+const BarberList = ({ barbers, availableTimes, setAvailableTimes }) => {
   const navigate = useNavigate();
   const [go, setGo] = useState(false);
 
@@ -159,7 +159,7 @@ const BarberList = ({ barbers }) => {
   return (
     <motion.div className="row" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
       {barbers.map((barber) => (
-        <BarberCard key={barber.id} barber={barber} setGo={setGo} />
+        <BarberCard key={barber.id} barber={barber} setGo={setGo} availableTimes = {availableTimes} setAvailableTimes = {setAvailableTimes} />
       ))}
       {go && (
         <motion.div
@@ -183,8 +183,8 @@ const BarberList = ({ barbers }) => {
 };
 
 const Barber = () => {
-  const { dataBase } = useContext(DatabaseContext);
-  return <BarberList barbers={dataBase} />;
+  const { dataBase, availabletimes, setAvailableTimes } = useContext(DatabaseContext);
+  return <BarberList barbers={dataBase} availableTimes = {availabletimes} setAvailableTimes = {setAvailableTimes}/>;
 };
 
 export default Barber;

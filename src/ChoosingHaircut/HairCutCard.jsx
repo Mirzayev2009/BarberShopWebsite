@@ -55,7 +55,7 @@ import { DatabaseContext } from "@/DataBase";
 const HaircutList = ({ setChoosenHaircut }) => {
   const [haircuts, setHaircuts] = useState([]);
 
-  const {haircutData} = useContext(DatabaseContext)
+  const {haircutData, selectedBarber, selectedTime} = useContext(DatabaseContext)
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
@@ -73,15 +73,32 @@ const HaircutList = ({ setChoosenHaircut }) => {
     haircut.description.toLowerCase().includes(searchQuery.toLowerCase())
   )
   const handleHaircutSelection = (haircut) => {
-    setChoosenHaircut(haircut);
-    navigate("/fillinginfopage");
-    toast.success(`Soch turmagi tanlandi. Endi vaqtni tanlang`, {
-      action: {
-        label: "Tanlash",
-        onClick: () => navigate("/fillinginfopage"),
-      },
-    });
-  };
+  setChoosenHaircut(haircut);
+  toast.success(`Soch turmagi tanlandi. Endi ma'lumotlarni to'ldiring`, {
+    action: {
+      label: "Tahrirlash",
+      onClick: ()=> {
+        if(!selectedTime){
+          navigate('/choosingTime')
+        } else if(!selectedBarber) {
+          navigate('/choosingbarber')
+        } else{
+               navigate('/fillinginfopage')
+        }
+      }
+    },
+  });
+  
+  // Immediate navigation
+  if (!selectedTime) {
+    navigate('/choosingTime');
+  } else if (!selectedBarber) {
+    navigate('/choosingBarber');
+  } else {
+    navigate('/fillinginfopage');
+  }
+};
+
 
   return (
 <div className="container px-4 py-5">

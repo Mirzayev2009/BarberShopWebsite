@@ -6,7 +6,7 @@ import { DatabaseContext } from "@/Database";
 import { motion } from "framer-motion";
 
 const ChoosingDate = () => {
-  const { setSelectedTime, setSelectedDate, selectedBarber } =
+  const { setSelectedTime, setSelectedDate, selectedBarber, availableTimes } =
     useContext(DatabaseContext);
   const [choosenTime, setChoosenTime] = useState(null);
   const [choosenDay, setChoosenDay] = useState(null);
@@ -29,7 +29,7 @@ const ChoosingDate = () => {
           <MyDatePicker setChoosenDay={setChoosenDay} />
         </div>
         <div className="w-full h-full shadow-md md:w-1/2 flex justify-center">
-          <TimePicker setChoosenTime={setChoosenTime} selectedBarber={selectedBarber} selectedDate={choosenDay} />
+          <TimePicker setChoosenTime={setChoosenTime} availableTimes={availableTimes} selectedBarber={selectedBarber} selectedDate={choosenDay} />
         </div>
       </motion.div>
     </>
