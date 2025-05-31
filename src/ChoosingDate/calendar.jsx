@@ -3,14 +3,44 @@ import { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import { motion, AnimatePresence } from "framer-motion";
 import "react-day-picker/dist/style.css";
+import {uz} from "date-fns/locale"
+import {format} from "date-fns"
 
 function MyDatePicker({ setChoosenDay, initialDate = null }) {
   const today = new Date();
-  const [selected, setSelected] = useState(initialDate || today);
+  const [selected, setSelected] = useState(initialDate ? new Date(initialDate) : null );
 
   useEffect(() => {
     if (selected) setChoosenDay(selected);
   }, [selected, setChoosenDay]);
+
+
+
+
+
+const customUzLocale = {
+  ...uz,
+  options: {
+    ...uz.options,
+    weekStartsOn: 1 // Monday as the first day of the week
+  },
+  localize: {
+    ...uz.localize,
+    day: (n) => {
+      const weekdays = ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"];
+     return weekdays[(n + 6) % 7]
+    }
+  },
+  formatters: {
+    ...uz.formatters,
+    weekday: (date) => {
+      const index = date.getDay();
+      const weekdays = ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"];
+      return weekdays[(index + 6) % 7]; // shift Sunday (0) to end
+    }
+  }
+};
+
 
   return (
     <motion.div
@@ -24,6 +54,8 @@ function MyDatePicker({ setChoosenDay, initialDate = null }) {
         selected={selected}
         onSelect={setSelected}
         disabled={{ before: today }}
+        locale={customUzLocale}
+        showWeekNumber={false}
         footer={
           <AnimatePresence mode="wait">
             {selected ? (
@@ -32,9 +64,9 @@ function MyDatePicker({ setChoosenDay, initialDate = null }) {
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
-                className="block mt-4 text-center text-sm text-gray-700 font-semibold"
+                className="block mt-10 mb-9 text-center text-xl text-gray-700 font-semibold"
               >
-                Tanlangan kun: {selected.toLocaleDateString("uz-UZ")}
+                Tanlangan kun: {format(selected, "d-MMMM, yyyy", {locale: uz})}
               </motion.span>
             ) : (
               <motion.span
@@ -42,7 +74,7 @@ function MyDatePicker({ setChoosenDay, initialDate = null }) {
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
-                className="block mt-4 text-center text-sm text-gray-400"
+                className="block mt-10 mb-9 text-center text-xl text-gray-400"
               >
                 Kunni tanlang
               </motion.span>
@@ -57,6 +89,7 @@ function MyDatePicker({ setChoosenDay, initialDate = null }) {
           selected: "bg-black text-white rounded-full",
           today:
             "bg-yellow-400 text-black font-bold border-2 border-yellow-600 rounded-lg",
+          disabled: "text-gray-300 line-through cursor-not-allowed"
         }}
       />
     </motion.div>
