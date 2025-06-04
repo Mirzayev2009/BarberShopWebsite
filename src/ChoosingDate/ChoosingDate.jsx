@@ -16,6 +16,36 @@ const ChoosingDate = () => {
     if (choosenTime) setSelectedTime(choosenTime);
   }, [choosenDay, choosenTime, setSelectedDate, setSelectedTime]);
 
+  if(!availableTimes || availableTimes.length === 0){
+    return  <div className="w-full h-screen flex justify-center items-center px-4">
+  <div className="w-[90%] sm:w-[70%] md:w-[50%] lg:w-[30%] p-6 bg-amber-500 rounded-3xl flex justify-center items-center">
+    <motion.h1
+      className="text-white text-xl sm:text-2xl md:text-3xl font-semibold text-center"
+      initial={{ opacity: 0, x: 30 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.span
+        animate={{
+          scale: [1, 0, 1],
+          opacity: [1, 0.1, 1],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 1.5,
+          ease: "easeInOut",
+        }}
+      >
+        Loading...
+      </motion.span>
+    </motion.h1>
+  </div>
+</div>
+
+    
+     
+  }
+
   return (
     <>
       <Nav />

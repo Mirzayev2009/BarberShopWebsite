@@ -1,67 +1,72 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useNavigate } from "react";
 import { DatabaseContext } from "../Database";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-// import { newDate } from "react-datepicker/dist/date_utils";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const BarberCard = ({ barber, setGo, availableTimes, setAvailableTimes }) => {
-  const { setSelectedBarber, setSelectedTime, setSelectedDate, setPersonalInfo } = useContext(DatabaseContext);
+const BarberCard = ({ barber, setGo }) => {
+  const { 
+    setSelectedBarber, 
+    setSelectedTime, 
+    setSelectedDate, 
+    selectedBarber, 
+    selectedTime, 
+    selectedDate,
+    setPersonalInfo 
+  } = useContext(DatabaseContext);
+
   const [isSelected, setIsSelected] = useState(false);
   const [availableTimesToday, setAvailableTimesToday] = useState([]);
   const [availableTimesTomorrow, setAvailableTimesTomorrow] = useState([]);
-  const [selectedTime, setSelectedTimeLocal] = useState(null);
-  const [selectedDate, setSelectedDateLocal] = useState("");
 
-
-  const formatDate = (date)=> {
+  const formatDate = (date) => {
     const dd = String(date.getDate()).padStart(2, "0");
     const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const yyyy = date.getFullYear()
+    const yyyy = date.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  };
 
-    return `${dd}-${mm}-${yyyy}`
-  }
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
 
-  const today = new Date()
-  const tomorrow = new Date()
-  tomorrow.setDate(today.getDate() + 1)
+  const todayDate = formatDate(today);
+  const tomorrowDate = formatDate(tomorrow);
 
-  const todayDate = formatDate(today)
-  const tomorrowDate = formatDate(tomorrow)
-
-  // useEffect(() => {
-  //   if (barber && barber.times) {
-  //     setAvailableTimesToday(barber.times[todayDate] || []);
-  //     setAvailableTimesTomorrow(barber.times[tomorrowDate] || []);
-  //   }
-  // }, [barber, todayDate, tomorrowDate]);
-
-  useEffect(()=>{
-    if(barber && barber.times) {
+  useEffect(() => {
+    if (barber && barber.times) {
       setAvailableTimesToday(barber.times[todayDate] || []);
-      setAvailableTimesTomorrow(barber.times[tomorrowDate] || [])
+      setAvailableTimesTomorrow(barber.times[tomorrowDate] || []);
     }
-  }, [barber, todayDate, tomorrowDate])
+  }, [barber, todayDate, tomorrowDate]);
 
+  // Correct setter usage here:
   const handleTimeSelection = (time, date) => {
-    setSelectedDate(date);
     setSelectedTime(time);
-    setSelectedBarber(barber);
-    setSelectedTimeLocal(time);
-    setSelectedDateLocal(date);
+    setSelectedDate(date);
 
     setPersonalInfo((prev) => ({
       ...prev,
-      selectedBarber: barber,
-      selectedTime: time,
       selectedDate: date,
+      selectedTime: time,
     }));
     setGo(true);
   };
+
+  const handleBarberSelection = () => {
+    setSelectedBarber(barber);
+    setPersonalInfo((prev) => ({
+      ...prev,
+      selectedBarber: barber,
+    }));
+    setIsSelected(true);
+    setGo(false);
+  };
+
+  const isBarberSelected = selectedBarber?.id === barber.id;
 
   return (
     <motion.div
@@ -72,94 +77,115 @@ const BarberCard = ({ barber, setGo, availableTimes, setAvailableTimes }) => {
     >
       <motion.div
         whileHover={{ scale: 1.03 }}
-        className={`card shadow-lg rounded-4 p-4 transition-all duration-300 ease-in-out ${isSelected ? "border-4 border-blue-500" : "border border-gray-300"}`}
+        className={`card shadow-lg rounded-4 p-4 transition-all duration-300 ease-in-out ${
+          isBarberSelected ? "border-4 border-blue-500" : "border border-gray-300"
+        }`}
       >
-        <motion.img
-          src={barber.image}
-          alt={barber.name}
-          className="card-img-top rounded-full mx-auto d-block"
-          style={{ width: "150px", height: "150px", objectFit: "cover" }}
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.3 }}
-        />
-        <div className="card-body text-center">
-          <h5 className="card-title font-semibold text-lg">{barber.name}</h5>
-          <p className="card-text text-muted">Reviews: {barber.reviews}</p>
+        {/* You can add barber image, name, reviews here */}
 
-          <div className="mt-4">
-            <h5 className="font-medium text-base">Bugun ({todayDate})</h5>
-            <div className="grid grid-cols-3 gap-3 mt-2">
-              {availableTimesToday.length > 0 ? (
-                availableTimesToday.map((time) => (
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    className={`btn ${
-                      selectedTime === time && selectedDate === todayDate
-                        ? "bg-blue-600 text-white"
-                        : "btn-outline-primary"
-                    }`}
-                    onClick={() => handleTimeSelection(time, todayDate)}
-                    key={`today-${time}`}
-                  >
-                    {time}
-                  </motion.button>
-                ))
-              ) : (
-                <p className="text-muted">Bugun mavjud vaqtlar yo'q.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <h5 className="font-medium text-base">Ertaga ({tomorrowDate})</h5>
-            <div className="grid grid-cols-3 gap-3 mt-2">
-              {availableTimesTomorrow.length > 0 ? (
-                availableTimesTomorrow.map((time) => (
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    key={`tomorrow-${time}`}
-                    className="btn btn-outline-primary"
-                    onClick={() => handleTimeSelection(time, tomorrowDate)}
-                  >
-                    {time}
-                  </motion.button>
-                ))
-              ) : (
-                <p className="text-muted">Ertaga mavjud vaqtlar yo'q.</p>
-              )}
-            </div>
+        {/* Times for Today */}
+        <div className="mt-4">
+          <h5 className="font-medium text-base">Bugun ({todayDate})</h5>
+          <div className="grid grid-cols-3 gap-3 mt-2">
+            {availableTimesToday.length > 0 ? (
+              availableTimesToday.map((time) => (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  className={`btn ${
+                    selectedTime === time && selectedDate === todayDate
+                      ? "bg-blue-600 text-white"
+                      : "btn-outline-primary"
+                  }`}
+                  onClick={() => handleTimeSelection(time, todayDate)}
+                  key={`today-${time}`}
+                >
+                  {time}
+                </motion.button>
+              ))
+            ) : (
+              <p className="text-muted">Bugun mavjud vaqtlar yo'q.</p>
+            )}
           </div>
         </div>
 
+        {/* Times for Tomorrow */}
+        <div className="mt-4">
+          <h5 className="font-medium text-base">Ertaga ({tomorrowDate})</h5>
+          <div className="grid grid-cols-3 gap-3 mt-2">
+            {availableTimesTomorrow.length > 0 ? (
+              availableTimesTomorrow.map((time) => (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  key={`tomorrow-${time}`}
+                  className={`btn ${
+                    selectedTime === time && selectedDate === tomorrowDate
+                      ? "bg-blue-600 text-white"
+                      : "btn-outline-primary"
+                  }`}
+                  onClick={() => handleTimeSelection(time, tomorrowDate)}
+                >
+                  {time}
+                </motion.button>
+              ))
+            ) : (
+              <p className="text-muted">Ertaga mavjud vaqtlar yo'q.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Barber selection button */}
         <motion.button
+          className="btn btn-outline-primary w-full mt-4"
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className={`btn btn-outline-primary w-full mt-4 ${isSelected ? "disabled" : ""}`}
-          onClick={() => {
-            setIsSelected(true);
-            setSelectedBarber(barber);
-          }}
-          disabled={isSelected}
+          onClick={handleBarberSelection}
+          disabled={isBarberSelected}
         >
-          {isSelected ? "Boshqa kunni tanlash" : "Boshqa kun tanlanadi"}
+          {isBarberSelected ? "Sartarosh tanlangan" : "Sartaroshni tanlash"}
         </motion.button>
       </motion.div>
     </motion.div>
   );
 };
 
-const BarberList = ({ barbers, availableTimes, setAvailableTimes }) => {
+
+
+
+const BarberList = ({ barbers, availableTimes}) => {
   const navigate = useNavigate();
   const [go, setGo] = useState(false);
 
-  if (!barbers || barbers.length === 0) {
-    return <p className="text-center">No barbers available at the moment.</p>;
+  if(!barbers || barbers.length === 0){
+    return <div className="w-full h-screen flex justify-center items-center px-4">
+  <div className="w-[90%] sm:w-[70%] md:w-[50%] lg:w-[30%] p-6 bg-amber-500 rounded-3xl flex justify-center items-center">
+    <motion.h1
+      className="text-white text-xl sm:text-2xl md:text-3xl font-semibold text-center"
+      initial={{ opacity: 0, x: 30 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.span
+        animate={{
+          scale: [1, 0, 1],
+          opacity: [1, 0.1, 1],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 1.5,
+          ease: "easeInOut",
+        }}
+      >
+        Loading...
+      </motion.span>
+    </motion.h1>
+  </div>
+</div>
   }
 
   return (
     <motion.div className="row" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
       {barbers.map((barber) => (
-        <BarberCard key={barber.id} barber={barber} setGo={setGo} availableTimes = {availableTimes} setAvailableTimes = {setAvailableTimes} />
+        <BarberCard key={barber.id} barber={barber} setGo={setGo} availableTimes = {availableTimes} setAvailableTimes = {setAvailableTimes} selectedTime />
       ))}
       {go && (
         <motion.div
@@ -183,8 +209,8 @@ const BarberList = ({ barbers, availableTimes, setAvailableTimes }) => {
 };
 
 const Barber = () => {
-  const { dataBase, availabletimes, setAvailableTimes } = useContext(DatabaseContext);
-  return <BarberList barbers={dataBase} availableTimes = {availabletimes} setAvailableTimes = {setAvailableTimes}/>;
+  const { dataBase, availabletimes, setAvailableTimes, selectedTime } = useContext(DatabaseContext);
+  return <BarberList barbers={dataBase} availableTimes = {availabletimes} setAvailableTimes = {setAvailableTimes} selectedTime = {selectedTime}/>;
 };
 
 export default Barber;

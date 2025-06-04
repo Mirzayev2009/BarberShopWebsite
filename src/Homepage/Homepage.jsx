@@ -48,8 +48,11 @@ const Homepage = () => {
         transition={{ duration: 1, delay: 0.4 }}
         className="w-full flex flex-col items-center justify-center space-y-4 text-white rounded-lg p-4 sm:p-6 pb-8"
       >
-        <Link to="/choosingbarber" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block">
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30">
+        <Link to="/choosingbarber" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block no-underline">
+          <motion.div
+           whileHover={{ scale: 1.05 }}
+           animate={{scale: [1,0.9, 1], opacity:[1,0.8,1], duration: 1.5}}
+            className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30   ">
             <div className="flex items-center space-x-3 transform transition-transform hover:scale-110">
               <i className="bx bxs-group text-3xl sm:text-4xl text-white"></i>
               <span className="text-base sm:text-lg text-white">Sartarosh tanlang</span>
@@ -58,18 +61,24 @@ const Homepage = () => {
           </motion.div>
         </Link>
 
-        <Link to="/choosingdate" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block">
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30">
+        <Link to="/choosingdate" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block no-underline">
+          <motion.div
+           whileHover={{ scale: 1.05 }} 
+           animate={{scale: [1,0.8, 1], opacity:[1,0.7,1], duration: 1.7}}
+           className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30">
             <div className="flex items-center space-x-3 transform transition-transform hover:scale-110">
               <i className="bx bxs-calendar text-3xl sm:text-4xl text-white"></i>
-              <span className="text-base sm:text-lg text-white">Kun va vaqtni tanlang</span>
+              <span className="text-base sm:text-lg text-white no-underline">Kun va vaqtni tanlang</span>
             </div>
             <i className="bx bx-chevron-right text-3xl sm:text-4xl transform transition-transform hover:scale-140 text-white"></i>
           </motion.div>
         </Link>
 
-        <Link to="/choosinghaircut" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block">
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30">
+        <Link to="/choosinghaircut" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block no-underline">
+          <motion.div
+           whileHover={{ scale: 1.05 }}
+           animate={{scale: [1,0.7, 1], opacity:[1,0.6,1], duration: 1.9}} 
+           className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30">
             <div className="flex items-center space-x-3 transform transition-transform hover:scale-110">
               <i className="bx bx-cut text-3xl sm:text-4xl text-white"></i>
               <span className="text-base sm:text-lg text-white">Soch-turmak turini tanlang</span>

@@ -31,6 +31,8 @@ function TimePicker({ setChoosenTime, selectedBarber, selectedDate, availableTim
     visible: { opacity: 1, x: 0 },
   };
 
+  
+
   return (
     <motion.div
       className="flex-1 flex h-full flex-col items-center justify-center bg-white rounded-lg shadow-md p-8"
@@ -39,7 +41,7 @@ function TimePicker({ setChoosenTime, selectedBarber, selectedDate, availableTim
       transition={{ duration: 0.5 }}
     >
       <h2 className="text-xl font-semibold mb-4">Aniq vaqtni tanlang</h2>
-
+      
       {times.length > 0 ? (
         <motion.div
           key={formattedDate} // triggers re-animation on date change
