@@ -1,6 +1,8 @@
-import React, { useState, useContext, useEffect, useNavigate } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { DatabaseContext } from "../Database";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -67,6 +69,16 @@ const BarberCard = ({ barber, setGo }) => {
   };
 
   const isBarberSelected = selectedBarber?.id === barber.id;
+
+  const navigate = useNavigate()
+
+  const handleOtherDay = () =>{
+    selectedBarber(barber)
+    selectedDate(null)
+    selectedTime(null)
+    setGo(false)
+    navigate ("/choosingDate") 
+  }
 
   return (
     <motion.div
@@ -143,6 +155,15 @@ const BarberCard = ({ barber, setGo }) => {
         >
           {isBarberSelected ? "Sartarosh tanlangan" : "Sartaroshni tanlash"}
         </motion.button>
+
+       {(!selectedDate && !selectedTime || selectedDate && selectedTime === null ) ? (
+        <button 
+        className="btn btn-warning w-full mt-4"
+        onClick={handleOtherDay}
+        >
+          Boshqa kunni tanlash
+        </button>
+       ) : null}
       </motion.div>
     </motion.div>
   );
@@ -151,36 +172,11 @@ const BarberCard = ({ barber, setGo }) => {
 
 
 
-const BarberList = ({ barbers, availableTimes}) => {
+const BarberList = ({ barbers}) => {
   const navigate = useNavigate();
   const [go, setGo] = useState(false);
 
-  if(!barbers || barbers.length === 0){
-    return <div className="w-full h-screen flex justify-center items-center px-4">
-  <div className="w-[90%] sm:w-[70%] md:w-[50%] lg:w-[30%] p-6 bg-amber-500 rounded-3xl flex justify-center items-center">
-    <motion.h1
-      className="text-white text-xl sm:text-2xl md:text-3xl font-semibold text-center"
-      initial={{ opacity: 0, x: 30 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.span
-        animate={{
-          scale: [1, 0, 1],
-          opacity: [1, 0.1, 1],
-        }}
-        transition={{
-          repeat: Infinity,
-          duration: 1.5,
-          ease: "easeInOut",
-        }}
-      >
-        Loading...
-      </motion.span>
-    </motion.h1>
-  </div>
-</div>
-  }
+
 
   return (
     <motion.div className="row" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
@@ -209,8 +205,36 @@ const BarberList = ({ barbers, availableTimes}) => {
 };
 
 const Barber = () => {
-  const { dataBase, availabletimes, setAvailableTimes, selectedTime } = useContext(DatabaseContext);
-  return <BarberList barbers={dataBase} availableTimes = {availabletimes} setAvailableTimes = {setAvailableTimes} selectedTime = {selectedTime}/>;
+  const { dataBase,  } = useContext(DatabaseContext);
+ const  barbers = dataBase
+
+    if(!barbers || barbers.length === 0){
+    return <div className="w-full h-screen flex justify-center items-center px-4">
+  <div className="w-[90%] sm:w-[70%] md:w-[50%] lg:w-[30%] p-6 bg-amber-500 rounded-3xl flex justify-center items-center">
+    <motion.h1
+      className="text-white text-xl sm:text-2xl md:text-3xl font-semibold text-center"
+      initial={{ opacity: 0, x: 30 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.span
+        animate={{
+          scale: [1, 0, 1],
+          opacity: [1, 0.1, 1],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 1.5,
+          ease: "easeInOut",
+        }}
+      >
+        Loading...
+      </motion.span>
+    </motion.h1>
+  </div>
+</div>
+  }
+  return <BarberList barbers={dataBase} />;
 };
 
 export default Barber;

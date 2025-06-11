@@ -1,9 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import barberCuttingHair from "../images/barber-cutting-hair.jpg";
 
 const Homepage = () => {
+  const [showContact, setShowContact] = useState(false);
+const contactRef = useRef(null);
+
+useEffect(() => {
+  function handleClickOutside(event) {
+    if (contactRef.current && !contactRef.current.contains(event.target)) {
+      setShowContact(false);
+    }
+  }
+
+  if (showContact) {
+    document.addEventListener("mousedown", handleClickOutside);
+  } else {
+    document.removeEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [showContact]);
+
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -20,9 +42,41 @@ const Homepage = () => {
         className="w-full h-36 flex justify-between text-3xl pr-20 pl-20 sm:text-4xl md:text-5xl text-white"
       >
         <div className="mt-18 transform transition-transform hover:scale-110">BR.</div>
-        <div className="w-1/2 flex justify-end gap-3.5 mt-6">
+        <div className="w-1/2 flex justify-end gap-3.5 mt-6 relative">
           <i className="bx bxs-user bx-md mt-5 cursor-pointer hover:scale-110 transition-transform"></i>
-          <i className="bx bxs-phone bx-md mt-5 cursor-pointer hover:scale-110 transition-transform"></i>
+          <div className="relative">
+            <i
+              className="bx bxs-phone bx-md mt-5 cursor-pointer hover:scale-110 transition-transform"
+              onClick={() => setShowContact(prev => !prev)}
+            ></i>
+
+            <AnimatePresence>
+              {showContact && (
+                <motion.div
+  ref={contactRef}
+  initial={{ opacity: 0, y: -10 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: -10 }}
+  transition={{ duration: 0.3 }}
+  className="absolute right-2 top-full mt-2 w-[90vw] max-w-xs sm:right-0 sm:w-64 bg-white text-black p-4 rounded-lg shadow-xl z-50 text-sm space-y-2"
+
+                >
+                  <p className="font-semibold text-lg">📞 +998 90 123 45 67</p>
+                  <div className="flex space-x-3 text-lg">
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                      <i className="bx bxl-facebook text-2xl text-blue-600 hover:scale-110 transition-transform"></i>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                      <i className="bx bxl-instagram text-2xl text-pink-500 hover:scale-110 transition-transform"></i>
+                    </a>
+                    <a href="https://t.me/yourbarbershop" target="_blank" rel="noopener noreferrer">
+                      <i className="bx bxl-telegram text-2xl text-sky-500 hover:scale-110 transition-transform"></i>
+                    </a>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </motion.div>
 
@@ -43,19 +97,21 @@ const Homepage = () => {
 
       {/* Navigation Buttons */}
       <motion.div
-        initial={{ y: 50, opacity: 0 }}
+        initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, delay: 0.4 }}
+        transition={{ duration: 1.2, delay: 0.5 }}
         className="w-full flex flex-col items-center justify-center space-y-4 text-white rounded-lg p-4 sm:p-6 pb-8"
       >
         <Link to="/choosingbarber" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block no-underline">
           <motion.div
-           whileHover={{ scale: 1.05 }}
-           animate={{scale: [1,0.9, 1], opacity:[1,0.8,1], duration: 1.5}}
-            className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30   ">
+            whileHover={{ scale: 1.05 }}
+            animate={{ scale: [1, 0.9, 1], opacity: [1, 0.8, 1] }}
+            transition={{ duration: 1.5 }}
+            className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30"
+          >
             <div className="flex items-center space-x-3 transform transition-transform hover:scale-110">
               <i className="bx bxs-group text-3xl sm:text-4xl text-white"></i>
-              <span className="text-base sm:text-lg text-white">Sartarosh tanlang</span>
+              <span className="text-[14px] sm:text-base text-white">Sartarosh tanlang</span>
             </div>
             <i className="bx bx-chevron-right text-3xl sm:text-4xl transform transition-transform hover:scale-140 text-white"></i>
           </motion.div>
@@ -63,12 +119,14 @@ const Homepage = () => {
 
         <Link to="/choosingdate" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block no-underline">
           <motion.div
-           whileHover={{ scale: 1.05 }} 
-           animate={{scale: [1,0.8, 1], opacity:[1,0.7,1], duration: 1.7}}
-           className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30">
+            whileHover={{ scale: 1.05 }}
+            animate={{ scale: [1, 0.8, 1], opacity: [1, 0.7, 1] }}
+            transition={{ duration: 1.7 }}
+            className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30"
+          >
             <div className="flex items-center space-x-3 transform transition-transform hover:scale-110">
               <i className="bx bxs-calendar text-3xl sm:text-4xl text-white"></i>
-              <span className="text-base sm:text-lg text-white no-underline">Kun va vaqtni tanlang</span>
+              <span className="text-[14px] sm:text-base text-white">Kun va vaqtni tanlang</span>
             </div>
             <i className="bx bx-chevron-right text-3xl sm:text-4xl transform transition-transform hover:scale-140 text-white"></i>
           </motion.div>
@@ -76,12 +134,14 @@ const Homepage = () => {
 
         <Link to="/choosinghaircut" className="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 block no-underline">
           <motion.div
-           whileHover={{ scale: 1.05 }}
-           animate={{scale: [1,0.7, 1], opacity:[1,0.6,1], duration: 1.9}} 
-           className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30">
+            whileHover={{ scale: 1.05 }}
+            animate={{ scale: [1, 0.7, 1], opacity: [1, 0.6, 1] }}
+            transition={{ duration: 1.9 }}
+            className="flex items-center justify-between p-4 border rounded-lg bg-opacity-30"
+          >
             <div className="flex items-center space-x-3 transform transition-transform hover:scale-110">
               <i className="bx bx-cut text-3xl sm:text-4xl text-white"></i>
-              <span className="text-base sm:text-lg text-white">Soch-turmak turini tanlang</span>
+              <span className="text-[14px] sm:text-base text-white">Soch-turmak turini tanlang</span>
             </div>
             <i className="bx bx-chevron-right text-3xl sm:text-4xl transform transition-transform hover:scale-140 text-white"></i>
           </motion.div>
