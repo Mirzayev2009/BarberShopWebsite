@@ -43,7 +43,7 @@ const BookingConfirmation = () => {
     };
 
     try {
-      const response = await fetch("http://192.168.1.136:8000/create-bookings/", {
+      const response = await fetch("http://192.168.1.145:8000/create-bookings/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingData),
@@ -85,7 +85,7 @@ const BookingConfirmation = () => {
      }
 
      try{
-      const response = await fetch(`http:192.168.1.136:8000/create-bookings/${bookingId}`, {
+      const response = await fetch(`http:192.168.1.145:8000/create-bookings/${bookingId}`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(updates)
@@ -107,7 +107,7 @@ const confirmUnbooking =  async ()=>{
   const bookingId = localStorage.getItem("nookingId")
 
   try{
-    const response = await fetch(`http:1192.168.1.136:8000/create-bookings/${bookingId}`, {
+    const response = await fetch(`http:1192.168.1.145:8000/create-bookings/${bookingId}`, {
       method: "DELETE"
     })
     if(response.ok){

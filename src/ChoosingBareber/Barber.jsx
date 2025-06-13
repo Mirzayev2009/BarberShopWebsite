@@ -40,8 +40,8 @@ const BarberCard = ({ barber, setGo }) => {
 
   useEffect(() => {
     if (barber && barber.times) {
-      setAvailableTimesToday(barber.times[todayDate] || []);
-      setAvailableTimesTomorrow(barber.times[tomorrowDate] || []);
+      setAvailableTimesToday(barber.availabletimes[todayDate] || []);
+      setAvailableTimesTomorrow(barber.availabletimes[tomorrowDate] || []);
     }
   }, [barber, todayDate, tomorrowDate]);
 
@@ -181,7 +181,7 @@ const BarberList = ({ barbers}) => {
   return (
     <motion.div className="row" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
       {barbers.map((barber) => (
-        <BarberCard key={barber.id} barber={barber} setGo={setGo} availableTimes = {availableTimes} setAvailableTimes = {setAvailableTimes} selectedTime />
+        <BarberCard key={barber.id} barber={barber} setGo={setGo}  />
       ))}
       {go && (
         <motion.div
