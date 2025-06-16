@@ -1,56 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { DatabaseContext } from "@/DataBase";
 
-// const API_DATA = [
-//   {
-//     id: 1,
-//     name: "Sochni Vosk Bilan Olib Tashlash",
-//     description: "Uzoq muddat davomida silliq va toza natija beradi.",
-//     price: 1400,
-//     discountPrice: 500,
-//     duration: 15,
-//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-//   },
-//   { 
-//     id: 2,
-//     name: "Erkaklar Soch Turmagi",
-//     description: "Klassik va zamonaviy kesim uslublari.",
-//     price: 2000,
-//     discountPrice: 1500,
-//     duration: 30,
-//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-//   },
-//   {
-//     id: 3,
-//     name: "Farzandlar Uchun Soch Turmagi",
-//     description: "Bolalar uchun qulay va zamonaviy soch kesimi.",
-//     price: 1200,
-//     discountPrice: 900,
-//     duration: 25,
-//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-//   },
-//   {
-//     id: 4,
-//     name: "Qalin Sochlar Uchun Model Kesish",
-//     description: "Qalin va uzun sochlar uchun maxsus xizmat.",
-//     price: 2500,
-//     discountPrice: 2000,
-//     duration: 40,
-//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-//   },
-//   {
-//     id: 5,
-//     name: "Soch Uchlarini Silliqlash",
-//     description: "Sochlarni parvarish qilish va uchlarini yumshoq qilish.",
-//     price: 1000,
-//     discountPrice: 700,
-//     duration: 20,
-//     imageUrl: "https://www.barberstake.com/wp-content/uploads/2024/10/Low-Taper-Fade-Haircut-1-995x503.jpg"
-//   }
-// ];
+
 
 const HaircutList = ({ setChoosenHaircut }) => {
   const [haircuts, setHaircuts] = useState([]);
@@ -68,35 +22,35 @@ const HaircutList = ({ setChoosenHaircut }) => {
   }, []);
 
   // Filter haircuts based on search input
-  const filteredHaircuts = haircuts.filter((haircut)=>
+const filteredHaircuts = useMemo(() => {
+  return haircuts.filter((haircut) =>
     haircut.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     haircut.description.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
+}, [haircuts, searchQuery]);
+
+console.log(selectedBarber, selectedTime,);
+
+
   const handleHaircutSelection = (haircut) => {
   setChoosenHaircut(haircut);
   toast.success(`Soch turmagi tanlandi. Endi ma'lumotlarni to'ldiring`, {
     action: {
-      label: "Tahrirlash",
+      label: "Ma'lumotlarni to'ldirish va tasdiqlash",
       onClick: ()=> {
-        if(!selectedTime){
-          navigate('/choosingTime')
-        } else if(!selectedBarber) {
-          navigate('/choosingbarber')
-        } else{
-               navigate('/fillinginfopage')
-        }
+     if (!selectedBarber) {
+  navigate('/choosingbarber');
+} else if (!selectedTime) {
+  navigate('/choosingTime');
+} else {
+  navigate('/fillinginfopage');
+}
+
       }
     },
   });
   
-  // Immediate navigation
-  if (!selectedTime) {
-    navigate('/choosingTime');
-  } else if (!selectedBarber) {
-    navigate('/choosingBarber');
-  } else {
-    navigate('/fillinginfopage');
-  }
+ 
 };
 
 
@@ -112,7 +66,7 @@ const HaircutList = ({ setChoosenHaircut }) => {
   />
 
   {/* Haircuts List */}
-  <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     {filteredHaircuts.length > 0 ? (
       filteredHaircuts.map((haircut, index) => (
         <motion.div
@@ -144,7 +98,7 @@ const HaircutList = ({ setChoosenHaircut }) => {
 
             {/* Description & Price */}
             <div className="card-body">
-              <p className="card-text text-muted">{haircut.description}</p>
+             <p className="card-text text-muted min-h-[60px]">{haircut.description}</p>
               <p className="fs-4 fw-bold">{haircut.price} ₽</p>
             </div>
 

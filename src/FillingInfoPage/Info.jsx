@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Calendar, Clock, Scissors, DollarSign, Hourglass } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { format, parse } from "date-fns";
 import { motion } from "framer-motion";
-
 
 const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onUpdate }) => {
   const navigate = useNavigate();
@@ -18,34 +17,43 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
     }
   };
 
-  // Inside your component
-  const inputDateValue = selectedDate
-    ? typeof selectedDate === "string"
-      ? format(parse(selectedDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd")
-      : format(selectedDate, "yyyy-MM-dd")
-    : "";
+  // Normalize date for input and comparison
+  let inputDateValue = "";
+  let normalizedDate = "";
 
-  // Handle input field change
+  if (selectedDate) {
+    try {
+      const parsed = typeof selectedDate === "string"
+        ? parse(selectedDate, "dd-MM-yyyy", new Date())
+        : new Date(selectedDate);
+
+      inputDateValue = format(parsed, "yyyy-MM-dd");
+      normalizedDate = format(parsed, "yyyy-MM-dd");
+    } catch (error) {
+      console.warn("Invalid selectedDate:", selectedDate);
+      inputDateValue = "";
+      normalizedDate = "";
+    }
+  }
+
   const handleDateChange = (e) => {
-    // Convert the input value (yyyy-MM-dd) to dd-MM-yyyy
     const newDate = e.target.value;
     const formattedDate = format(new Date(newDate), "dd-MM-yyyy");
-    handleUpdate("selectedDate", formattedDate); // Update with dd-MM-yyyy
+    handleUpdate("selectedDate", formattedDate);
   };
 
-  // Retrieve available times for the selected barber and date
-  const rawTimes = selectedBarber?.times?.[selectedDate];
-  const availableTimes = Array.isArray(rawTimes) ? rawTimes : [];
+  const availableTimes = useMemo(() => {
+    if (!selectedBarber?.availabletimes || !normalizedDate) return [];
+    try {
+      return selectedBarber.availabletimes
+        .filter(t => format(new Date(t.date), "yyyy-MM-dd") === normalizedDate)
+        .map(t => t.time);
+    } catch {
+      return [];
+    }
+  }, [selectedBarber, normalizedDate]);
 
-  console.log("selectedDate:", selectedDate);
-  console.log("selectedBarber.times:", selectedBarber?.times);
-  console.log("availableTimes:", availableTimes);
-
-  // Get today's date to disable past dates in the date picker
-  const today = new Date().toISOString().split("T")[0]; // Get today as yyyy-mm-dd
-
-
-
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <motion.div
@@ -124,7 +132,7 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
                     ))
                 ) : (
                   <SelectItem value="no-times" disabled>
-                    No available times
+                    Mavjud vaqt yoʻq
                   </SelectItem>
                 )}
               </SelectContent>
@@ -133,7 +141,7 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
 
           {/* Haircut Selection Button */}
           <div className="flex items-center w-fit space-x-2">
-            <Scissors className="w-5 h-5  text-red-500" />
+            <Scissors className="w-5 h-5 text-red-500" />
             <Button
               variant="outline"
               onClick={() => navigate("/choosinghaircut")}
@@ -143,7 +151,7 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
             </Button>
           </div>
 
-          {/* Price Display */}
+          {/* Price */}
           <div className="flex items-center space-x-2">
             <DollarSign className="w-5 h-5 text-yellow-500" />
             <p className="text-lg font-medium mt-3">
@@ -151,7 +159,7 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
             </p>
           </div>
 
-          {/* Duration Display */}
+          {/* Duration */}
           <div className="flex items-center space-x-2">
             <Hourglass className="w-5 h-5 text-purple-500" />
             <div className="w-[55px] mt-3">
@@ -167,6 +175,3 @@ const Info = ({ selectedTime, selectedDate, selectedBarber, selectedHaircut, onU
 };
 
 export default Info;
-
-
- 

@@ -9,6 +9,7 @@ import { DatabaseProvider } from "./Database"; // Make sure this uses the fetche
 import FillingInfo from "./FillingInfoPage/FillingInfo";
 import FinalPage from "./FinalPage/FinalPage";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Toaster } from "@/components/ui/sonner"; 
 
 const App = () => {
 
@@ -17,6 +18,7 @@ const App = () => {
   return (
     <DatabaseProvider >
       <MantineProvider withGlobalStyles withNormalizeCSS>
+            <Toaster />
         <Router>
           <Routes>
             <Route path="/" element={<Homepage />} />

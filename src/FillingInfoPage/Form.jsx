@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -36,20 +36,67 @@ export function PersonalInfoForm() {
     },
   });
 
-  const { setPersonalInfo } = useContext(DatabaseContext);
+  const { setPersonalInfo, selectedBarber, selectedHaircut, selectedDate, selectedTime } =
+    useContext(DatabaseContext);
+
+  const [submittedData, setSubmittedData] = useState(null);
+  const intervalRef = useRef(null);
+
+  const sendMessageToBackend = async (data) => {
+    try {
+      const response = await fetch("http://localhost:8000/api/messages/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error("Message failed");
+      console.log("Message sent to backend");
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
+  };
 
   const onSubmit = (data) => {
-    console.log("Form Submitted:", data);
-    setPersonalInfo(data);
-    navigate("/finalpage"); 
+    if (!selectedBarber || !selectedHaircut || !selectedDate || !selectedTime) {
+      alert("Iltimos, barcha maydonlarni to'ldiring.");
+      return;
+    }
+
+    const fullData = {
+      ...data,
+      barber: selectedBarber?.id,
+      haircut: selectedHaircut?.id,
+      date: selectedDate,
+      time: selectedTime?.id,
+    };
+
+    setPersonalInfo(fullData);
+    setSubmittedData(fullData);
+    form.reset();
+    navigate("/finalpage");
   };
+
+  useEffect(() => {
+    const existingId = localStorage.getItem("bookingId");
+
+    if (!submittedData || existingId) return;
+
+    sendMessageToBackend(submittedData);
+    intervalRef.current = setInterval(() => {
+      sendMessageToBackend(submittedData);
+    }, 30000);
+
+    return () => clearInterval(intervalRef.current);
+  }, [submittedData]);
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Shaxsiy Ma'lumotlar</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Name */}
           <FormField
             control={form.control}
             name="name"
@@ -63,8 +110,6 @@ export function PersonalInfoForm() {
               </FormItem>
             )}
           />
-
-          {/* Phone */}
           <FormField
             control={form.control}
             name="phone"
@@ -78,8 +123,6 @@ export function PersonalInfoForm() {
               </FormItem>
             )}
           />
-
-          {/* Email */}
           <FormField
             control={form.control}
             name="email"
@@ -93,8 +136,6 @@ export function PersonalInfoForm() {
               </FormItem>
             )}
           />
-
-          {/* Comment */}
           <FormField
             control={form.control}
             name="comment"
@@ -108,9 +149,10 @@ export function PersonalInfoForm() {
               </FormItem>
             )}
           />
-
-          {/* Submit Button */}
-          <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700 text-white text-lg">
+          <Button
+            type="submit"
+            className="w-full bg-amber-600 hover:bg-amber-700 text-white text-lg"
+          >
             Yuborish
           </Button>
         </form>

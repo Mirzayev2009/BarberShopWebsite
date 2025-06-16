@@ -6,7 +6,16 @@ function TimePicker({ setChoosenTime, selectedBarber, selectedDate, availableTim
   const [selectedTime, setSelectedTime] = useState(null);
 
   const formattedDate = selectedDate?.toISOString().split("T")[0];
-  const times = availableTimes?.[formattedDate] || [];
+const times =
+  availableTimes
+    ?.filter((item) => {
+      return (
+        item.barber === selectedBarber?.id &&
+        item.date === formattedDate
+      );
+    })
+    .map((item) => item.time) || [];
+
 
   const handleTimeSelection = (time) => {
     setSelectedTime(time);
