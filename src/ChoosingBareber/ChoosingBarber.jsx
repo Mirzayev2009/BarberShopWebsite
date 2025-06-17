@@ -46,9 +46,9 @@ const ChoosingBarber = () => {
   }
 
   return (
-    <div className='w-full h-full '>
-        <Nav className = "mb-24"/>
-        <Barber setChoosenBarber = {setChoosenBarber} className="mt-24 "/>
+    <div className='w-full h-full  '>
+        <Nav />
+        <Barber setChoosenBarber = {setChoosenBarber} />
         <Toaster/>
     </div>
   )

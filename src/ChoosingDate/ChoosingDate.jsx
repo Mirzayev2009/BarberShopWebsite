@@ -6,7 +6,7 @@ import { DatabaseContext } from "@/Database";
 import { motion } from "framer-motion";
 
 const ChoosingDate = () => {
-  const { setSelectedTime, setSelectedDate, selectedBarber, availableTimes } =
+  const { setSelectedTime, setSelectedDate, selectedBarber, availableTimes, selectedHaircut } =
     useContext(DatabaseContext);
   const [choosenTime, setChoosenTime] = useState(null);
   const [choosenDay, setChoosenDay] = useState(null);
@@ -71,6 +71,7 @@ const ChoosingDate = () => {
       availableTimes={availableTimes}
       selectedBarber={selectedBarber}
       selectedDate={choosenDay}
+      selectedHaircut = {selectedHaircut}
     />
   </motion.div>
 )}

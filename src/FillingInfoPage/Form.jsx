@@ -21,7 +21,7 @@ const formSchema = z.object({
   name: z.string().min(5, { message: "Ism kamida 5 ta harfdan iborat bo'lishi kerak" }),
   phone: z.string().min(13, { message: "Telefon raqamni to'liq kiriting" }),
   email: z.string().email({ message: "Emailni kiriting" }),
-  comment: z.string().min(10, { message: "Izoh kamida 10 ta harf bo'lishi kerak" }).optional(),
+  comment: z.string().optional(),
 });
 
 export function PersonalInfoForm() {
@@ -36,65 +36,83 @@ export function PersonalInfoForm() {
     },
   });
 
-  const { setPersonalInfo, selectedBarber, selectedHaircut, selectedDate, selectedTime } =
-    useContext(DatabaseContext);
+  const { setPersonalInfo } = useContext(DatabaseContext);
 
-  const [submittedData, setSubmittedData] = useState(null);
+  const [showSMSInput, setShowSMSInput] = useState(false);
+  const [smsCode, setSmsCode] = useState("");
+  const [timer, setTimer] = useState(0);
+  const [submittedPhone, setSubmittedPhone] = useState(null);
   const intervalRef = useRef(null);
 
-  const sendMessageToBackend = async (data) => {
+  // Cleanup timer on component unmount
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const startTimer = () => {
+    setTimer(30);
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setTimer(prev => {
+        if (prev === 1) {
+          clearInterval(intervalRef.current);
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const sendSMS = async (phone) => {
     try {
-      const response = await fetch("http://localhost:8000/api/messages/", {
+      const res = await fetch("http://192.168.1.61:8000/request-sms-code/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
       });
 
-      if (!response.ok) throw new Error("Message failed");
-      console.log("Message sent to backend");
+      if (!res.ok) throw new Error("SMS yuborishda xatolik");
+
+      setSubmittedPhone(phone);
+      setShowSMSInput(true);
+      setSmsCode("");
+      startTimer();
     } catch (err) {
-      console.error("Failed to send message:", err);
+      console.error(err);
+      alert("SMS yuborishda muammo yuz berdi.");
     }
   };
 
-  const onSubmit = (data) => {
-    if (!selectedBarber || !selectedHaircut || !selectedDate || !selectedTime) {
-      alert("Iltimos, barcha maydonlarni to'ldiring.");
-      return;
+  const verifyCode = async () => {
+    try {
+      const res = await fetch("http://192.168.1.61:8000/verify-sms-code/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: submittedPhone, code: smsCode }),
+      });
+
+      if (res.ok) {
+        navigate("/finalpage");
+      } else {
+        alert("Kod noto‘g‘ri yoki vaqti tugagan.");
+      }
+    } catch (err) {
+      console.error("Kodni tekshirishda xatolik:", err);
     }
-
-    const fullData = {
-      ...data,
-      barber: selectedBarber?.id,
-      haircut: selectedHaircut?.id,
-      date: selectedDate,
-      time: selectedTime?.id,
-    };
-
-    setPersonalInfo(fullData);
-    setSubmittedData(fullData);
-    form.reset();
-    navigate("/finalpage");
   };
 
-  useEffect(() => {
-    const existingId = localStorage.getItem("bookingId");
-
-    if (!submittedData || existingId) return;
-
-    sendMessageToBackend(submittedData);
-    intervalRef.current = setInterval(() => {
-      sendMessageToBackend(submittedData);
-    }, 30000);
-
-    return () => clearInterval(intervalRef.current);
-  }, [submittedData]);
+  const onSubmit = async (data) => {
+    setPersonalInfo(data);
+    if (timer === 0) {
+      await sendSMS(data.phone);
+    } else {
+      alert(`Kod yuborilgan. Iltimos ${timer} soniya kuting.`);
+    }
+  };
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Shaxsiy Ma'lumotlar</h2>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -110,6 +128,7 @@ export function PersonalInfoForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="phone"
@@ -123,6 +142,7 @@ export function PersonalInfoForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="email"
@@ -136,6 +156,7 @@ export function PersonalInfoForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="comment"
@@ -149,6 +170,7 @@ export function PersonalInfoForm() {
               </FormItem>
             )}
           />
+
           <Button
             type="submit"
             className="w-full bg-amber-600 hover:bg-amber-700 text-white text-lg"
@@ -157,6 +179,31 @@ export function PersonalInfoForm() {
           </Button>
         </form>
       </Form>
+
+      {showSMSInput && (
+        <div className="mt-6 p-4 border rounded-md bg-gray-50">
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            SMS Kodni kiriting:
+          </label>
+          <Input
+            type="text"
+            placeholder="123456"
+            value={smsCode}
+            onChange={(e) => setSmsCode(e.target.value)}
+            className="mb-2"
+          />
+          <Button
+            onClick={verifyCode}
+            disabled={!smsCode}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            Tasdiqlash
+          </Button>
+          <p className="mt-2 text-sm text-gray-500">
+            Kodni qayta yuborish uchun {timer} soniya kuting...
+          </p>
+        </div>
+      )}
     </div>
   );
 }

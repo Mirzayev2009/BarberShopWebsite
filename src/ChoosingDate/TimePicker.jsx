@@ -1,95 +1,97 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
-function TimePicker({ setChoosenTime, selectedBarber, selectedDate, availableTimes }) {
+function TimePicker({
+  setChoosenTime,
+  selectedBarber,
+  selectedDate,
+  availableTimes,
+  selectedHaircut,
+}) {
   const [selectedTime, setSelectedTime] = useState(null);
+  const navigate = useNavigate();
 
-  const formattedDate = selectedDate?.toISOString().split("T")[0];
-const times =
-  availableTimes
-    ?.filter((item) => {
-      return (
-        item.barber === selectedBarber?.id &&
-        item.date === formattedDate
-      );
-    })
-    .map((item) => item.time) || [];
+  const formattedDate = selectedDate ? format(selectedDate, "yyyy-MM-dd") : null;
 
+  const matchingTimeObjects = useMemo(() => {
+    if (!formattedDate) return [];
+    if (selectedBarber) {
+      return selectedBarber.availabletimes?.filter(
+        (item) => item.date === formattedDate
+      ) || [];
+    }
+    return availableTimes?.filter((item) => item.date === formattedDate) || [];
+  }, [selectedBarber, formattedDate, availableTimes]);
 
-  const handleTimeSelection = (time) => {
-    setSelectedTime(time);
-    setChoosenTime(time);
-    toast.success(`Vaqt tanlandi: ${time}`);
-  };
+  const handleTimeSelection = (timeObj) => {
+    setSelectedTime(timeObj);
+    setChoosenTime(timeObj);
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, x: 100 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        staggerChildren: 0.05,
+    toast.success(`Vaqt tanlandi: ${timeObj.time}`, {
+      action: {
+        label: "Keyingi qadam",
+        onClick: () => {
+          if (!selectedBarber) {
+            navigate("/choosingbarber");
+          } else if (selectedHaircut) {
+            navigate("/fillinginfopage");
+          } else {
+            navigate("/choosinghaircut");
+          }
+        },
       },
-    },
+    });
   };
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: 30 },
-    visible: { opacity: 1, x: 0 },
-  };
-
-  
+console.log(selectedDate, selectedTime);
 
   return (
     <motion.div
-      className="flex-1 flex h-full flex-col items-center justify-center bg-white rounded-lg shadow-md p-8"
+      className="w-full max-w-6xl mx-auto px-4 py-6 bg-gradient-to-br from-[#e6e9f0] to-[#eef1f7] rounded-2xl shadow-xl border border-[#a88bfa] flex flex-col items-center"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-xl font-semibold mb-4">Aniq vaqtni tanlang</h2>
-      
-      {times.length > 0 ? (
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-[#392d69] text-center">Aniq vaqtni tanlang</h2>
+
+      {matchingTimeObjects.length > 0 ? (
         <motion.div
-          key={formattedDate} // triggers re-animation on date change
-          variants={containerVariants}
+          key={formattedDate}
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full max-w-5xl"
           initial="hidden"
           animate="visible"
-          className="mb-4 w-full text-xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"
         >
-          {times.map((time) => (
+          {matchingTimeObjects.map((timeObj, index) => (
             <motion.button
-              key={time}
-              variants={itemVariants}
-              className={`p-3 text-xl rounded-lg transition-colors duration-300 ${
-                selectedTime === time
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-gray-100 hover:bg-gray-300"
+              key={`${timeObj.id}-${timeObj.time}-${index}`}
+              className={`p-3 text-sm sm:text-base rounded-xl font-semibold transition-all duration-300 w-full ${
+                selectedTime?.id === timeObj.id
+                  ? "bg-[#7357f6] text-white shadow-lg"
+                  : "bg-white hover:bg-[#f0f0ff] text-[#392d69] border border-[#ccc]"
               }`}
-              aria-pressed={selectedTime === time}
-              onClick={() => handleTimeSelection(time)}
+              onClick={() => handleTimeSelection(timeObj)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               layout
             >
-              {time}
+              {timeObj.time}
             </motion.button>
           ))}
         </motion.div>
       ) : (
-        <p className="text-gray-500 text-lg">Bu kunda mavjud vaqtlar yo‘q</p>
+        <p className="text-gray-500 text-lg mt-6 text-center">Bu kunda mavjud vaqtlar yo‘q</p>
       )}
 
       <motion.p
-        className="mt-4 text-lg text-center text-gray-600"
-        key={selectedTime}
+        className="mt-6 text-lg text-center text-[#5a5473] px-2"
+        key={selectedTime?.id}
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {selectedTime ? `Tanlangan vaqt: ${selectedTime}` : "Aniq vaqt tanlang"}
+        {selectedTime ? `Tanlangan vaqt: ${selectedTime.time}` : "Iltimos, vaqt tanlang"}
       </motion.p>
     </motion.div>
   );

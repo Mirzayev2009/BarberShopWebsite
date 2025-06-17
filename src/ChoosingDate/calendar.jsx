@@ -43,56 +43,56 @@ const customUzLocale = {
 
 
   return (
-    <motion.div
-      className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-8 h-full"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <DayPicker
-        mode="single"
-        selected={selected}
-        onSelect={setSelected}
-        disabled={{ before: today }}
-        locale={customUzLocale}
-        showWeekNumber={false}
-        footer={
-          <AnimatePresence mode="wait">
-            {selected ? (
-              <motion.span
-                key={selected.toISOString()}
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                className="block mt-10 mb-9 text-center text-xl text-gray-700 font-semibold"
-              >
-                Tanlangan kun: {format(selected, "d-MMMM, yyyy", {locale: uz})}
-              </motion.span>
-            ) : (
-              <motion.span
-                key="no-selection"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                className="block mt-10 mb-9 text-center text-xl text-gray-400"
-              >
-                Kunni tanlang
-              </motion.span>
-            )}
-          </AnimatePresence>
-        }
-        classNames={{
-          months: "flex flex-col gap-4",
-          caption: "text-xl font-bold text-center",
-          head_cell: "text-gray-500 text-lg",
-          cell: "p-4 rounded-lg hover:bg-gray-200 transition",
-          selected: "bg-black text-white rounded-full",
-          today:
-            "bg-yellow-400 text-black font-bold border-2 border-yellow-600 rounded-lg",
-          disabled: "text-gray-300 line-through cursor-not-allowed"
-        }}
-      />
-    </motion.div>
+  <motion.div
+  className="w-full max-w-4xl mx-auto p-4 sm:p-6 md:p-8 bg-gradient-to-br from-[#fafbff] to-[#eef0f8] rounded-2xl shadow-xl border border-[#d1c4ff] flex flex-col items-center"
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+>
+  <DayPicker
+    mode="single"
+    selected={selected}
+    onSelect={setSelected}
+    disabled={{ before: today }}
+    locale={customUzLocale}
+    showWeekNumber={false}
+    footer={
+      <AnimatePresence mode="wait">
+        {selected ? (
+          <motion.span
+            key={selected.toISOString()}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="block mt-10 mb-9 text-center text-lg sm:text-xl text-[#4b3c86] font-semibold"
+          >
+            Tanlangan kun: {format(selected, "d-MMMM, yyyy", { locale: uz })}
+          </motion.span>
+        ) : (
+          <motion.span
+            key="no-selection"
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="block mt-10 mb-9 text-center text-lg sm:text-xl text-gray-400"
+          >
+            Kunni tanlang
+          </motion.span>
+        )}
+      </AnimatePresence>
+    }
+    classNames={{
+      months: "flex flex-col gap-4 w-full",
+      caption: "text-xl font-bold text-center text-[#5d4d8b]",
+      head_cell: "text-gray-500 text-base sm:text-lg",
+      cell: "p-3 sm:p-4 rounded-lg hover:bg-[#e7e5f7] transition",
+      selected: "bg-[#7357f6] text-white rounded-full",
+      today: "bg-[#ffd700] text-black font-bold border-2 border-[#d4af37] rounded-lg",
+      disabled: "text-gray-300 line-through cursor-not-allowed"
+    }}
+  />
+</motion.div>
+
   );
 }
 

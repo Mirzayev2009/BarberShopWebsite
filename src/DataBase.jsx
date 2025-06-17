@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect  } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const DatabaseContext = createContext();
 
@@ -8,78 +8,80 @@ export const DatabaseProvider = ({ children }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [cancellationReason, setCancellationReason] = useState("");
-  const [personalInfo, setPersonalInfo] = useState(null); // Add this state
-  
+  const [personalInfo, setPersonalInfo] = useState(null);
+
   const [dataBase, setDatabase] = useState([]);
-  const[haircutData, setHaircutData] = useState([])
-  const [availableTimes, setAvailableTimes] = useState([])
-  const URL = "http://192.168.1.90:8000/barbers-list";
-   
-    useEffect(() => { 
-      async function fetchData() {
-        try {
-          const res = await fetch(URL);
-          if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
-          }
-          const data = await res.json();
-          setDatabase(data);
-        } catch (error) {
-          console.error("Error fetching database:", error);
-        }
+  const [haircutData, setHaircutData] = useState([]);
+  const [availableTimes, setAvailableTimes] = useState([]);
+
+  // New states for editing modals
+  const [newBarber, setNewBarber] = useState(null);
+  const [newHaircut, setNewHaircut] = useState(null);
+  const [newTime, setNewTime] = useState(null);
+
+  const [isUnbooking, setIsUnbooking] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const [bookingId, setBookingId] = useState(localStorage.getItem("bookingId") || null);
+
+  useEffect(() => {
+    if (bookingId) localStorage.setItem("bookingId", bookingId);
+    else localStorage.removeItem("bookingId");
+  }, [bookingId]);
+
+  // API URLs
+  const API_BASE = "http://192.168.1.61:8000";
+  const URLS = {
+    barbers: `${API_BASE}/barbers-list`,
+    haircuts: `${API_BASE}/haircuts-list`,
+    times: `${API_BASE}/availabletimes`,
+  };
+
+  // Fetch barbers
+  useEffect(() => {
+    async function fetchBarbers() {
+      try {
+        const res = await fetch(URLS.barbers);
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
+        const data = await res.json();
+        setDatabase(data);
+      } catch (err) {
+        console.error("❌ Error fetching barbers:", err);
       }
-      fetchData();
-    }, []);
+    }
+    fetchBarbers();
+  }, []);
 
-    console.log(dataBase);
-    
-
-    const URL2 = "http://192.168.1.90:8000/haircuts-list";
-   
-    useEffect(() => { 
-      async function fetchDataN2() {
-        try {
-          const res = await fetch(URL2);
-          if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
-          }
-          const data = await res.json();
-          setHaircutData(data);
-        } catch (error) {
-          console.error("Error fetching haircutdata:", error);
-        }
+  // Fetch haircuts
+  useEffect(() => {
+    async function fetchHaircuts() {
+      try {
+        const res = await fetch(URLS.haircuts);
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
+        const data = await res.json();
+        setHaircutData(data);
+      } catch (err) {
+        console.error("❌ Error fetching haircuts:", err);
       }
-      fetchDataN2();
-    }, []);
-    
-    console.log(haircutData);
+    }
+    fetchHaircuts();
+  }, []);
 
-    const URL3 = "http://192.168.1.90:8000/availabletimes" 
-
-    useEffect(()=>{
-      async function FetchDataN3() {
-        try{
-          const res = await fetch(URL3)
-          if(!res.ok){
-            throw new Error(`HTTP error! Status: ${res.status}`)
-          }
-          const data = await res.json()
-          setAvailableTimes(data)
-        }
-        catch(error){
-          console.error("Error fetching availabletimes:", error);
-          
-        }
+  // Fetch available times
+  useEffect(() => {
+    async function fetchTimes() {
+      try {
+        const res = await fetch(URLS.times);
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
+        const data = await res.json();
+        setAvailableTimes(data);
+      } catch (err) {
+        console.error("❌ Error fetching times:", err);
       }
-      FetchDataN3()
-    }, [])
+    }
+    fetchTimes();
+  }, []);
 
-    console.log(availableTimes);
-    
-  
-
-
-  
   return (
     <DatabaseContext.Provider
       value={{
@@ -94,17 +96,16 @@ export const DatabaseProvider = ({ children }) => {
         cancellationReason,
         setCancellationReason,
         personalInfo,
-        setPersonalInfo, 
+        setPersonalInfo,
         dataBase,
         setDatabase,
         haircutData,
         setHaircutData,
         availableTimes,
-        setAvailableTimes
+        setAvailableTimes,
       }}
     >
       {children}
     </DatabaseContext.Provider>
   );
 };
-

@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { DatabaseContext } from "../Database";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FaInstagram, FaTelegramPlane } from "react-icons/fa";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -14,30 +15,50 @@ const BarberCard = ({ barber, setGo }) => {
     setSelectedTime,
     setSelectedDate,
     selectedBarber,
+    selectedTime,
+    selectedDate,
     setPersonalInfo,
   } = useContext(DatabaseContext);
 
   const [availableTimesToday, setAvailableTimesToday] = useState([]);
   const [availableTimesTomorrow, setAvailableTimesTomorrow] = useState([]);
-  const [localSelectedTime, setLocalSelectedTime] = useState(null); // <-- NEW
-  const [localSelectedDate, setLocalSelectedDate] = useState(null); // <-- NEW
+  const [localSelectedTime, setLocalSelectedTime] = useState(null);
+  const [localSelectedDate, setLocalSelectedDate] = useState(null);
+
+  const navigate = useNavigate();
 
   const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
 
-  const formatDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-  const displayDate = (date) => `${String(date.getDate()).padStart(2, "0")}-${String(date.getMonth() + 1).padStart(2, "0")}-${date.getFullYear()}`;
+  const formatDate = (date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  const displayDate = (date) =>
+    `${String(date.getDate()).padStart(2, "0")}-${String(date.getMonth() + 1).padStart(2, "0")}-${date.getFullYear()}`;
 
   const todayDate = formatDate(today);
   const tomorrowDate = formatDate(tomorrow);
 
   useEffect(() => {
-    if (barber && Array.isArray(barber.availabletimes)) {
-      setAvailableTimesToday(barber.availabletimes.filter((entry) => entry.date === todayDate));
-      setAvailableTimesTomorrow(barber.availabletimes.filter((entry) => entry.date === tomorrowDate));
+    if (barber?.availabletimes?.length) {
+      setAvailableTimesToday(barber.availabletimes.filter(e => e.date === todayDate));
+      setAvailableTimesTomorrow(barber.availabletimes.filter(e => e.date === tomorrowDate));
     }
   }, [barber]);
+
+  const isBarberSelected = selectedBarber?.id === barber.id;
+ const normalizeDate = (dateObjOrString) => {
+  const date = new Date(dateObjOrString);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+};
+
+const hasMatchingTime = barber.availabletimes?.some(
+  (entry) =>
+    entry.date === normalizeDate(selectedDate) &&
+    entry.time === selectedTime?.time
+);
+
+  const disableSelection = selectedTime && selectedDate && !hasMatchingTime;
 
   const handleTimeSelection = (entry) => {
     setLocalSelectedTime(entry);
@@ -45,22 +66,24 @@ const BarberCard = ({ barber, setGo }) => {
   };
 
   const handleBarberSelection = () => {
-    if (!localSelectedTime) return;
+    const timeToUse = selectedTime || localSelectedTime;
+    const dateToUse = selectedDate || localSelectedDate;
+
+    if (!timeToUse || !dateToUse) return;
 
     setSelectedBarber(barber);
-    setSelectedTime(localSelectedTime);
-    setSelectedDate(localSelectedDate);
+    setSelectedTime(timeToUse);
+    setSelectedDate(dateToUse);
+
     setPersonalInfo((prev) => ({
       ...prev,
       selectedBarber: barber,
-      selectedDate: localSelectedDate,
-      selectedTime: localSelectedTime,
+      selectedTime: timeToUse,
+      selectedDate: dateToUse,
     }));
+
     setGo(true);
   };
-
-  const isBarberSelected = selectedBarber?.id === barber.id;
-  const navigate = useNavigate();
 
   const handleOtherDay = () => {
     setSelectedBarber(barber);
@@ -70,8 +93,11 @@ const BarberCard = ({ barber, setGo }) => {
     navigate("/choosingDate");
   };
 
-  console.log(selectedBarber);
-  
+  const royalColors = {
+    primary: "bg-blue-900",
+    highlight: "text-yellow-400",
+    border: "border-yellow-400",
+  };
 
   return (
     <motion.div
@@ -81,82 +107,130 @@ const BarberCard = ({ barber, setGo }) => {
       className="col-md-4 col-sm-6 mb-4 mt-32"
     >
       <motion.div
-        whileHover={{ scale: 1.03 }}
-        className={`card shadow-lg rounded-4 p-4 transition-all duration-300 ease-in-out ${
-          isBarberSelected ? "border-4 border-blue-500" : "border border-gray-300"
-        }`}
+        whileHover={{ scale: 1.02 }}
+        className={`card shadow-xl rounded-4 p-10 transition-all duration-300 ease-in-out bg-white border-2 ${royalColors.border}`}
       >
-        {/* Times for Today */}
-        <div className="mt-4">
-          <h5 className="font-medium text-base">Bugun ({displayDate(today)})</h5>
-          <div className="grid grid-cols-3 gap-3 mt-2">
-            {availableTimesToday.length > 0 ? (
-              availableTimesToday.map((entry) => (
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  key={`today-${entry.id}`}
-                  className={`btn ${
-                    localSelectedTime?.id === entry.id ? "bg-blue-600 text-white" : "btn-outline-primary"
-                  }`}
-                  onClick={() => handleTimeSelection(entry)}
-                >
-                  {entry.time.slice(0, 5)}
-                </motion.button>
-              ))
-            ) : (
-              <p className="text-muted">Bugun mavjud vaqtlar yo'q.</p>
-            )}
-          </div>
+        {/* Avatar & Name */}
+        <div className="flex flex-col items-center mb-4">
+          <img
+            src={barber.avatar || "https://via.placeholder.com/100x100?text=Avatar"}
+            alt="Barber Avatar"
+            className="w-24 h-24 rounded-full border-4 border-blue-900 object-cover"
+          />
+          <h3 className="mt-3 text-xl font-bold text-blue-900">{barber.name}</h3>
         </div>
+
+        {/* Times for Today */}
+        {!selectedTime && (
+          <div className="mb-4">
+            <h5 className="font-medium text-base text-blue-900">Bugun ({displayDate(today)})</h5>
+            <div className="grid grid-cols-3 gap-2 mt-2">
+              {availableTimesToday.length > 0 ? (
+                availableTimesToday.map((entry) => (
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    key={`today-${entry.id}`}
+                    className={`px-2 py-1 rounded-full text-sm border ${
+                      localSelectedTime?.id === entry.id
+                        ? "bg-blue-900 text-white"
+                        : "border-blue-900 text-blue-900"
+                    }`}
+                    onClick={() => handleTimeSelection(entry)}
+                  >
+                    {entry.time.slice(0, 5)}
+                  </motion.button>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">Bo‘sh vaqt yo‘q</p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Times for Tomorrow */}
-        <div className="mt-4">
-          <h5 className="font-medium text-base">Ertaga ({displayDate(tomorrow)})</h5>
-          <div className="grid grid-cols-3 gap-3 mt-2">
-            {availableTimesTomorrow.length > 0 ? (
-              availableTimesTomorrow.map((entry) => (
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  key={`tomorrow-${entry.id}`}
-                  className={`btn ${
-                    localSelectedTime?.id === entry.id ? "bg-blue-600 text-white" : "btn-outline-primary"
-                  }`}
-                  onClick={() => handleTimeSelection(entry)}
-                >
-                  {entry.time.slice(0, 5)}
-                </motion.button>
-              ))
-            ) : (
-              <p className="text-muted">Ertaga mavjud vaqtlar yo'q.</p>
-            )}
+        {!selectedTime && (
+          <div className="mb-4">
+            <h5 className="font-medium text-base text-blue-900">Ertaga ({displayDate(tomorrow)})</h5>
+            <div className="grid grid-cols-3 gap-2 mt-2">
+              {availableTimesTomorrow.length > 0 ? (
+                availableTimesTomorrow.map((entry) => (
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    key={`tomorrow-${entry.id}`}
+                    className={`px-2 py-1 rounded-full text-sm border ${
+                      localSelectedTime?.id === entry.id
+                        ? "bg-blue-900 text-white"
+                        : "border-blue-900 text-blue-900"
+                    }`}
+                    onClick={() => handleTimeSelection(entry)}
+                  >
+                    {entry.time.slice(0, 5)}
+                  </motion.button>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">Bo‘sh vaqt yo‘q</p>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Barber selection */}
+        {/* Select Button */}
         <motion.button
-          className="btn btn-outline-primary w-full mt-4"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleBarberSelection}
-          disabled={isBarberSelected}
+          whileTap={!disableSelection ? { scale: 0.95 } : {}}
+          onClick={!disableSelection ? handleBarberSelection : undefined}
+          disabled={disableSelection}
+          className={`w-full py-2 rounded-full font-medium transition-all ${
+            disableSelection
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : isBarberSelected
+              ? "bg-yellow-400 text-blue-900 cursor-default"
+              : "border border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white"
+          }`}
         >
-          {isBarberSelected ? "Sartarosh tanlangan" : "Sartaroshni tanlash"}
+          {disableSelection
+            ? "Bu sartaroshda bu vaqt yo‘q"
+            : isBarberSelected
+            ? "Sartarosh tanlangan"
+            : "Tanlash"}
         </motion.button>
 
-        {/* Other day option */}
-  {!localSelectedTime && (
-  <button className="btn btn-warning w-full mt-4" onClick={handleOtherDay}>
-    Boshqa kunni tanlash
-  </button>
-)}
+        {/* Other Day */}
+        {!selectedTime && !localSelectedTime && (
+          <button
+            className="mt-3 w-full py-2 rounded-full bg-yellow-400 text-blue-900 font-semibold"
+            onClick={handleOtherDay}
+          >
+            Boshqa kunni tanlash
+          </button>
+        )}
 
+        {/* Social Media */}
+        <div className="flex justify-center gap-5 mt-6">
+          {barber.instagram && (
+            <a
+              href={barber.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-900 hover:text-yellow-400 text-xl"
+            >
+              <FaInstagram />
+            </a>
+          )}
+          {barber.telegram && (
+            <a
+              href={barber.telegram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-900 hover:text-yellow-400 text-xl"
+            >
+              <FaTelegramPlane />
+            </a>
+          )}
+        </div>
       </motion.div>
     </motion.div>
   );
 };
-
-
-
 
 
 
@@ -168,7 +242,7 @@ const BarberList = ({ barbers}) => {
 
 
   return (
-    <motion.div className="row" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+    <motion.div className="row pt-8" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
       {barbers.map((barber) => (
         <BarberCard key={barber.id} barber={barber} setGo={setGo}  />
       ))}
@@ -198,7 +272,7 @@ const Barber = () => {
 
 
 
-  return <BarberList barbers={dataBase} />;
+  return <BarberList  barbers={dataBase} />;
 };
 
 export default Barber;
