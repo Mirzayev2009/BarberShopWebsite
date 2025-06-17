@@ -216,6 +216,8 @@ const confirmUnbooking = async () => {
 };
 
 
+
+
   const handleNewBooking = () => {
     setSelectedBarber(null);
     setSelectedHaircut(null);
@@ -225,6 +227,16 @@ const confirmUnbooking = async () => {
     localStorage.removeItem("bookingId");
     navigate("/");
   };
+
+  const deletingTime = async ()=>{
+    try {
+      const res = await fetch(`http://192.168.1.61:8000/all-bookings/barber/${selectedTime}`,{
+        method: "DELETE",}
+      )
+    } catch (error) {
+      
+    }
+  }
 
   return (
     <div className="relative">
@@ -246,8 +258,13 @@ const confirmUnbooking = async () => {
             />
           )}
           <div>
-            <p className="text-xl font-semibold">{selectedBarber?.name}</p>
-            <p className="text-sm text-[#555]">Барбер</p>
+            <div>
+              <img src="" alt="" />
+            </div>
+            <div>
+              <p className="text-xl font-semibold">{selectedBarber?.name}</p>
+              <p className="text-sm text-[#555]">Барбер</p>
+            </div>
           </div>
         </div>
 
