@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
-import Homepage from "./Homepage/Homepage";
-import ChoosingBarber from "./ChoosingBareber/ChoosingBarber";
-import ChoosingHaircut from "./ChoosingHaircut/ChoosingHaircut";
-import ChoosingDate from "./ChoosingDate/ChoosingDate";
+import Homepage from "./pages/Homepage/Homepage";
+import ChoosingBarber from "./pages/ChoosingBareber/ChoosingBarber";
+import ChoosingHaircut from "./pages/ChoosingHaircut/ChoosingHaircut";
+import ChoosingDate from "./pages/ChoosingDate/ChoosingDate";
 import { DatabaseProvider } from "./Database"; // Make sure this uses the fetched data
-import FillingInfo from "./FillingInfoPage/FillingInfo";
-import FinalPage from "./FinalPage/FinalPage";
+import FillingInfo from "./pages/FillingInfoPage/FillingInfo";
+import FinalPage from "./pages/FinalPage/FinalPage";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Toaster } from "@/components/ui/sonner"; 
 

@@ -5,7 +5,7 @@ import React, { useState, useEffect, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { DatabaseContext } from "../Database";
+import { DatabaseContext } from "@/Database";
 
 const HaircutList = ({ setChoosenHaircut }) => {
   const [haircuts, setHaircuts] = useState([]);

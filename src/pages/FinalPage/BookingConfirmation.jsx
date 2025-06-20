@@ -38,6 +38,7 @@ const BookingConfirmation = () => {
     setSelectedDate,
     setSelectedTime,
     setPersonalInfo,
+    fetchTimes
   } = useContext(DatabaseContext);
 
   const navigate = useNavigate();
@@ -49,33 +50,35 @@ const BookingConfirmation = () => {
   const [selectedDay, setSelectedDay] = useState(selectedDate instanceof Date ? selectedDate : new Date(selectedDate));
   const [newTime, setNewTime] = useState(selectedTime?.id || "");
 
-  const formattedDate = useMemo(() => {
-    const dateObj = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
-    return dateObj.toLocaleDateString("ru-RU", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-    });
-  }, [selectedDate]);
 
-  const timesForBarber = useMemo(() => {
+
+ const formattedDate = useMemo(()=>{
+  const dateObj = selectedDate instanceof Date ? selectedDate : new Date(selectedDate)
+  return dateObj.toLocaleDateString("uz-UZ", {
+     weekday: "long",
+     day: "numeric",
+     month: "long"
+  })
+ }, [selectedDate])
+
+
+  const timesForBarber = useMemo(()=>{
     return availableTimes.filter(
       (t) =>
         t.barber === parseInt(newBarber) &&
-        new Date(t.date).toDateString() === new Date(selectedDay).toDateString()
-    );
-  }, [newBarber, selectedDay, availableTimes]);
+      new Date(t.date).toDateString() === new Date(selectedDay).toDateString()
+    )
+  }, [newBarber, selectedDay, availableTimes])
 
    const createBooking = async () => {
-  if (!personalInfo?.name || !personalInfo.phone || !selectedBarber || !selectedTime) {
-    alert("Iltimos, barcha maydonlarni to'ldiring.");
-    return;
+
+  if(!personalInfo?.name || !personalInfo.phone || !selectedBarber ||!selectedTime ) {
+    alert("Iltimos, barcha maydonlarni to'diring.")
+    return
   }
 
-  // Splits full name into first and last name
-  const [first_name, last_name = ""] = personalInfo.name.trim().split(" ");
+  const [first_name, last_name = ""] = personalInfo.name.trim().split(" ")
 
-  // Check phone format manually before sending (should match backend pattern)
   const uzbekPhoneRegex = /^\+998[-\s]?\d{2}[-\s]?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
   if (!uzbekPhoneRegex.test(personalInfo.phone)) {
     alert("Telefon raqami noto‘g‘ri formatda. Misol: +998 90 123 45 67");
@@ -87,29 +90,37 @@ const BookingConfirmation = () => {
     last_name,
     phone: personalInfo.phone,
     barber: selectedBarber.id,
-    haircut: selectedHaircut?.id || null,
-    available_time: selectedTime.id,
-  };
+    haircut: selectedHaircut.id || null,
+    available_time: selectedTime.id
+  }
 
-  try {
-    const res = await fetch("http://192.168.1.61:8000/create-bookings/", {
+  try{
+     const res = await fetch(`http://192.168.1.61:8000/bookings/`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+     })
+  
 
-    if (res.ok) {
-      const data = await res.json();
-      localStorage.setItem("bookingId", data.id);
-      // navigate("/final");
-    } else {
-      const err = await res.json();
-      console.error("Booking error:", err);
-      alert("Yozilishda xatolik yuz berdi.");
-    }
+
+
+    if(res.ok){
+      const data = await res.json()
+      localStorage.setItem("bookingId", data.id)
+   } else{
+    const err = await res.json()
+    console.error("Booking err", err )
+    
+   }
   } catch (error) {
     console.error("Network error:", error);
     alert("Server bilan aloqa uzildi.");
+  }
+  const isStillAvailable = availableTimes.find(
+    (t)=> t.id === selectedTime.id && !t.is_booked
+  )
+  if (!isStillAvailable) {
+    alert("Bu vaqt band qilingan")
   }
 };
 
@@ -131,7 +142,7 @@ useEffect(() => {
       .catch((err) => {
         console.error("Error checking booking:", err);
         localStorage.removeItem("bookingId");
-        createBooking();
+        // createBooking();
       });
   } else {
     console.log("No existing ID, creating booking");
@@ -148,7 +159,6 @@ const updateBooking = async () => {
   }
 
   const [first_name, last_name = ""] = personalInfo.name.trim().split(" ");
-
   const uzbekPhoneRegex = /^\+998[-\s]?\d{2}[-\s]?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
   if (!uzbekPhoneRegex.test(personalInfo.phone)) {
     alert("Telefon raqami noto‘g‘ri formatda.");
@@ -165,15 +175,19 @@ const updateBooking = async () => {
   };
 
   try {
-    const res = await fetch(`http://192.168.1.61:8000/bookings/${bookingId}/reschedule/`, {
+    const res = await fetch(`http://192.168.1.61:8000/bookings/${bookingId}/`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Token ${localStorage.getItem("token")}`,
+      },
       body: JSON.stringify(payload),
     });
 
     if (res.ok) {
       console.log("✅ Booking successfully updated");
-      navigate(0); // Reload to fetch updated confirmation
+      await fetchTimes()
+      navigate(0);
     } else {
       const err = await res.json();
       console.error("❌ Reschedule failed:", err);
@@ -193,17 +207,22 @@ const confirmUnbooking = async () => {
   try {
     const res = await fetch(`http://192.168.1.61:8000/bookings/${bookingId}/`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Token ${localStorage.getItem("token")}`,
+      },
       body: JSON.stringify({ reason: cancelReason }),
     });
 
     if (res.ok) {
+      await fetchTimes()
       setSelectedBarber(null);
       setSelectedHaircut(null);
       setSelectedDate(null);
       setSelectedTime(null);
       setPersonalInfo(null);
       localStorage.removeItem("bookingId");
+      localStorage.removeItem()
       navigate("/");
     } else {
       const err = await res.json();
@@ -218,6 +237,7 @@ const confirmUnbooking = async () => {
 
 
 
+
   const handleNewBooking = () => {
     setSelectedBarber(null);
     setSelectedHaircut(null);
@@ -228,15 +248,7 @@ const confirmUnbooking = async () => {
     navigate("/");
   };
 
-  const deletingTime = async ()=>{
-    try {
-      const res = await fetch(`http://192.168.1.61:8000/all-bookings/barber/${selectedTime}`,{
-        method: "DELETE",}
-      )
-    } catch (error) {
-      
-    }
-  }
+
 
   return (
     <div className="relative">
@@ -268,15 +280,15 @@ const confirmUnbooking = async () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-6 flex flex-wrap justify-center">
-          <Button variant="outline" onClick={handleNewBooking}>Make another booking</Button>
-          <Button className="bg-[#947100] text-white" onClick={() => setIsUpdating(true)}>Reschedule booking</Button>
-          <Button variant="destructive" onClick={() => setIsUnbooking(true)}>Cancel booking</Button>
+        <div className="grid grid-cols-2 gap-4 mb-6 ">
+          <Button variant="outline" onClick={handleNewBooking}>Yana boshqa buyurtma qilish</Button>
+          <Button className="bg-[#947100] text-white" onClick={() => setIsUpdating(true)}>Buyurtmani o'zgartirish</Button>
+          <Button variant="destructive" onClick={() => setIsUnbooking(true)}>Buyurtmani bekor qilish</Button>
         </div>
 
         <div className="mb-6">
           <h3 className="text-[#947100] font-semibold text-sm flex items-center gap-1 mb-1">
-            <Scissors size={16} /> Services
+            <Scissors size={16} /> Tanlangan soch turmak
           </h3>
           <p className=" text-xl">{selectedHaircut?.name}</p>
           <p className="text-xl text-[#555]">1 h – 1,800 ₽</p>
@@ -285,12 +297,10 @@ const confirmUnbooking = async () => {
 
         <div className="mb-6">
           <h3 className="text-[#947100] font-semibold text-sm mb-1 flex items-center gap-2">
-            <MapPin size={16} /> Contact details
+            <MapPin size={16} />
           </h3>
-          <p className="text-base">Москва - м. Волоколамская - Пятницкое шоссе 7</p>
-          <p className="text-sm">МОСКВА - ПЯТНИЦКОЕ ШОССЕ, Д.7</p>
-          <p className="text-sm flex items-center gap-1 mt-2"><Phone size={14} /> +7 995 895-70-30</p>
-          <p className="text-sm flex items-center gap-1"><Globe size={14} /> volokolamskaya.borodach.com</p>
+          <p className="text-base">Samarqand Shahar, Ali qushki ko'chasi</p>
+          <YandexMap/>
         </div>
       </div>
 
@@ -346,8 +356,8 @@ const confirmUnbooking = async () => {
               </Select>
 
               <div className="flex gap-2 justify-end">
-                <Button variant="outline" onClick={() => setIsUpdating(false)}>Cancel</Button>
-                <Button className="bg-[#947100] text-white" onClick={updateBooking}>Save</Button>
+                <Button variant="outline" onClick={() => setIsUpdating(false)}>Bekor qilish</Button>
+                <Button className="bg-[#947100] text-white" onClick={updateBooking}>Buyurtmani o'zgartirish</Button>
               </div>
             </motion.div>
           </motion.div>
@@ -369,9 +379,9 @@ const confirmUnbooking = async () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
             >
-              <h2 className="text-lg font-bold text-[#947100] mb-4">Why are you cancelling?</h2>
+              <h2 className="text-lg font-bold text-[#947100] mb-4">Nega buyurtmani bekor qilayapsiz</h2>
               <div className="space-y-2 mb-4">
-                {["Plans changed", "Found another barber", "Too expensive", "Other"].map((reason) => (
+                {["Rejalarim o'zgarib qoldi", "Boshqa barber topdim", "Juda ham qimmat", "Juda ham uzoq", "Boshqa"].map((reason) => (
                   <Button
                     key={reason}
                     variant={cancelReason === reason ? "default" : "outline"}
@@ -383,9 +393,9 @@ const confirmUnbooking = async () => {
                 ))}
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsUnbooking(false)}>Back</Button>
+                <Button variant="outline" onClick={() => setIsUnbooking(false)}>Qaytish</Button>
                 <Button variant="destructive" onClick={confirmUnbooking} disabled={!cancelReason}>
-                  Confirm Cancel
+                  Bekor qilishni tasdiqlash
                 </Button>
               </div>
             </motion.div>

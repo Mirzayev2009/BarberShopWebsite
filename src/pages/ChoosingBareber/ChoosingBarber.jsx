@@ -1,7 +1,7 @@
 
 import React, { useContext, useEffect, useState } from 'react'
 import Barber from './Barber'
-import Nav from '../Nav'
+import Nav from '@/Nav'
 import { DatabaseContext } from '@/DataBase'
 import { Toaster } from 'sonner'
 import { motion } from "framer-motion";

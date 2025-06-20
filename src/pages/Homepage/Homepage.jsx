@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import barberCuttingHair from "../images/barber-cutting-hair.jpg";
+import barberCuttingHair from "@/images/barber-cutting-hair.jpg";
 
 const Homepage = () => {
   const [showContact, setShowContact] = useState(false);

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Nav from '../Nav';
+import Nav from '@/Nav';
 import HaircutList from './HairCutCard';
 import { DatabaseContext } from '@/DataBase';
 import { motion } from 'framer-motion';

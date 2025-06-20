@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { DatabaseContext } from "../Database";
+import { DatabaseContext } from "@/Database";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaInstagram, FaTelegramPlane } from "react-icons/fa";
@@ -41,8 +41,8 @@ const BarberCard = ({ barber, setGo }) => {
 
   useEffect(() => {
     if (barber?.availabletimes?.length) {
-      setAvailableTimesToday(barber.availabletimes.filter(e => e.date === todayDate));
-      setAvailableTimesTomorrow(barber.availabletimes.filter(e => e.date === tomorrowDate));
+      setAvailableTimesToday(barber.availabletimes.filter(e => e.date === todayDate && !e.is_booked));
+      setAvailableTimesTomorrow(barber.availabletimes.filter(e => e.date === tomorrowDate  && !e.is_booked));
     }
   }, [barber]);
 
@@ -61,6 +61,9 @@ const hasMatchingTime = barber.availabletimes?.some(
   const disableSelection = selectedTime && selectedDate && !hasMatchingTime;
 
   const handleTimeSelection = (entry) => {
+
+    if(entry.is_booked) return
+  
     setLocalSelectedTime(entry);
     setLocalSelectedDate(entry.date);
   };
@@ -99,6 +102,9 @@ const hasMatchingTime = barber.availabletimes?.some(
     border: "border-yellow-400",
   };
 
+  console.log(selectedBarber, selectedTime, selectedTime);
+  
+
   return (
     <motion.div
       variants={fadeInUp}
@@ -129,6 +135,7 @@ const hasMatchingTime = barber.availabletimes?.some(
                 availableTimesToday.map((entry) => (
                   <motion.button
                     whileTap={{ scale: 0.95 }}
+                    disabled={entry.is_booked}
                     key={`today-${entry.id}`}
                     className={`px-2 py-1 rounded-full text-sm border ${
                       localSelectedTime?.id === entry.id

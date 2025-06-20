@@ -20,7 +20,6 @@ import { DatabaseContext } from "@/DataBase";
 const formSchema = z.object({
   name: z.string().min(5, { message: "Ism kamida 5 ta harfdan iborat bo'lishi kerak" }),
   phone: z.string().min(13, { message: "Telefon raqamni to'liq kiriting" }),
-  email: z.string().email({ message: "Emailni kiriting" }),
   comment: z.string().optional(),
 });
 
@@ -31,7 +30,6 @@ export function PersonalInfoForm() {
     defaultValues: {
       name: "",
       phone: "",
-      email: "",
       comment: "",
     },
   });
@@ -82,23 +80,26 @@ export function PersonalInfoForm() {
     }
   };
 
-  const verifyCode = async () => {
-    try {
-      const res = await fetch("http://192.168.1.61:8000/verify-sms-code/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: submittedPhone, code: smsCode }),
-      });
+const verifyCode = async () => {
+  try {
+    const res = await fetch("http://192.168.1.61:8000/verify-sms-code/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: submittedPhone, code: smsCode }),
+    });
 
-      if (res.ok) {
-        navigate("/finalpage");
-      } else {
-        alert("Kod noto‘g‘ri yoki vaqti tugagan.");
-      }
-    } catch (err) {
-      console.error("Kodni tekshirishda xatolik:", err);
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem("token", data.token); // 🔐 Token saqlanmoqda
+      navigate("/finalpage");
+    } else {
+      alert("Kod noto‘g‘ri yoki vaqti tugagan.");
     }
-  };
+  } catch (err) {
+    console.error("Kodni tekshirishda xatolik:", err);
+  }
+};
+
 
   const onSubmit = async (data) => {
     setPersonalInfo(data);
@@ -137,20 +138,6 @@ export function PersonalInfoForm() {
                 <FormLabel>Telefon raqam</FormLabel>
                 <FormControl>
                   <Input placeholder="+998 99 999 99 99" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="misoluchun@gmail.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

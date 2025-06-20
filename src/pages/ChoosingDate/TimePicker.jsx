@@ -20,11 +20,17 @@ function TimePicker({
     if (!formattedDate) return [];
     if (selectedBarber) {
       return selectedBarber.availabletimes?.filter(
-        (item) => item.date === formattedDate
+        (item) => 
+          item.date === formattedDate && item.is_booked === false
       ) || [];
     }
     return availableTimes?.filter((item) => item.date === formattedDate) || [];
   }, [selectedBarber, formattedDate, availableTimes]);
+
+  availableTimes.filter(
+    (t)=> 
+      t.barber === selectedBarber.id && 
+      new Date(t.date).toDateString() === new Date(selectedDate).toDateString() && !t.is_booked    )
 
   const handleTimeSelection = (timeObj) => {
     setSelectedTime(timeObj);

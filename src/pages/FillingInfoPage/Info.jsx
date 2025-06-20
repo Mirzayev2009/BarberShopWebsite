@@ -53,7 +53,7 @@ const Info = ({ selectedTime, selectedBarber, selectedHaircut, onUpdate }) => {
     if (!selectedBarber?.availabletimes || !normalizedDate) return [];
     try {
       return selectedBarber.availabletimes.filter(
-        (t) => format(new Date(t.date), "yyyy-MM-dd") === normalizedDate
+        (t) => format(new Date(t.date), "yyyy-MM-dd") === normalizedDate && !t.is_booked
       );
     } catch {
       return [];

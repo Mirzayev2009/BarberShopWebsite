@@ -14,13 +14,6 @@ export const DatabaseProvider = ({ children }) => {
   const [haircutData, setHaircutData] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
 
-  // New states for editing modals
-  const [newBarber, setNewBarber] = useState(null);
-  const [newHaircut, setNewHaircut] = useState(null);
-  const [newTime, setNewTime] = useState(null);
-
-  const [isUnbooking, setIsUnbooking] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const [bookingId, setBookingId] = useState(localStorage.getItem("bookingId") || null);
 
@@ -34,7 +27,7 @@ export const DatabaseProvider = ({ children }) => {
   const URLS = {
     barbers: `${API_BASE}/barbers-list`,
     haircuts: `${API_BASE}/haircuts-list`,
-    times: `${API_BASE}/availabletimes`,
+    times: `${API_BASE}/availabletimes/`,
   };
 
   // Fetch barbers
@@ -67,20 +60,41 @@ export const DatabaseProvider = ({ children }) => {
     fetchHaircuts();
   }, []);
 
-  // Fetch available times
   useEffect(() => {
-    async function fetchTimes() {
-      try {
-        const res = await fetch(URLS.times);
-        if (!res.ok) throw new Error(`Status: ${res.status}`);
-        const data = await res.json();
-        setAvailableTimes(data);
-      } catch (err) {
-        console.error("❌ Error fetching times:", err);
-      }
+  async function fetchTimes() {
+    if (!selectedBarber) return;
+
+    try {
+      const res = await fetch(`${URLS.times}`);
+      if (!res.ok) throw new Error(`Status: ${res.status}`);
+      const data = await res.json();
+      setAvailableTimes(data);
+    } catch (err) {
+      console.error("❌ Error fetching barber-specific times:", err);
     }
-    fetchTimes();
-  }, []);
+  }
+
+  fetchTimes();
+}, [selectedBarber]);
+
+  // Fetch available times
+// Fetch available times when selectedBarber changes
+useEffect(() => {
+  async function fetchTimes() {
+    if (!selectedBarber) return;
+
+    try {
+      const res = await fetch(`${URLS.times}/?barber=${selectedBarber.id}`);
+      if (!res.ok) throw new Error(`Status: ${res.status}`);
+      const data = await res.json();
+      setAvailableTimes(data);
+    } catch (err) {
+      console.error("❌ Error fetching barber-specific times:", err);
+    }
+  }
+
+  fetchTimes();
+}, [selectedBarber]);
 
   return (
     <DatabaseContext.Provider
@@ -103,6 +117,7 @@ export const DatabaseProvider = ({ children }) => {
         setHaircutData,
         availableTimes,
         setAvailableTimes,
+        // fetchTimes
       }}
     >
       {children}
