@@ -28,9 +28,9 @@ const HaircutList = ({ setChoosenHaircut }) => {
 
   const handleHaircutSelection = (haircut) => {
     setChoosenHaircut(haircut);
-    toast.success(`Soch turmagi tanlandi. Endi ma'lumotlarni to'ldiring`, {
+    toast.success(`Ajoyib`, {
       action: {
-        label: "Ma'lumotlarni to'ldirish va tasdiqlash",
+        label: "Keyingi qadam",
         onClick: () => {
           if (!selectedBarber) {
             navigate("/choosingbarber");
@@ -69,7 +69,7 @@ const HaircutList = ({ setChoosenHaircut }) => {
           {/* Image */}
           <div className="h-[160px] w-full overflow-hidden rounded-t-xl">
             <img
-              src={haircut.imageUrl || "https://via.placeholder.com/400x150"}
+              src={haircut.imageUrl }
               alt={haircut.name}
               className="w-full h-full object-cover"
             />

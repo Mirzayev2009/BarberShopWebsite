@@ -81,14 +81,18 @@ const customUzLocale = {
         )}
       </AnimatePresence>
     }
+    className="w-full overflow-x-auto"
     classNames={{
-      months: "flex flex-col gap-4 w-full",
-      caption: "text-xl font-bold text-center text-[#5d4d8b]",
-      head_cell: "text-gray-500 text-base sm:text-lg",
-      cell: "p-3 sm:p-4 rounded-lg hover:bg-[#e7e5f7] transition",
-      selected: "bg-[#7357f6] text-white rounded-full",
-      today: "bg-[#ffd700] text-black font-bold border-2 border-[#d4af37] rounded-lg",
-      disabled: "text-gray-300 line-through cursor-not-allowed"
+    months: "flex flex-col sm:flex-row flex-wrap gap-4 justify-center w-full",
+    caption: "text-xl font-bold text-center text-[#5d4d8b]",
+    head: "w-full",
+    head_row: "flex justify-between w-full",
+    head_cell: "text-gray-500 text-sm text-center w-10",
+    row: "flex justify-center w-full",
+    cell: "p-2 sm:p-3 w-10 text-center rounded-lg hover:bg-[#e7e5f7] transition",
+    selected: "bg-[#7357f6] text-white rounded-full",
+    today: "bg-[#ffd700] text-black font-bold border-2 border-[#d4af37] rounded-lg",
+    disabled: "text-gray-300 line-through cursor-not-allowed"
     }}
   />
 </motion.div>

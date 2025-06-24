@@ -3,6 +3,9 @@ import { DatabaseContext } from "@/Database";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaInstagram, FaTelegramPlane } from "react-icons/fa";
+import { toast } from "sonner";
+import ChoosingHaircut from "../ChoosingHaircut/ChoosingHaircut";
+
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -85,7 +88,21 @@ const hasMatchingTime = barber.availabletimes?.some(
       selectedDate: dateToUse,
     }));
 
-    setGo(true);
+   toast.success(`Sartarosh tanlandi: ${barber.name}`, {
+  action: {
+    label: "Keyingi qadam",
+    onClick: () => {
+      if (!selectedTime) {
+        navigate("/choosingDate");
+      } else if (selectedHaircut) {  // 🟢 Fix: use `selectedHaircut` not `ChoosingHaircut`
+        navigate("/fillinginfopage"); // 🔠 Fix: consistent lowercase route
+      } else {
+        navigate("/choosinghaircut");
+      }
+    },
+  },
+});
+
   };
 
   const handleOtherDay = () => {
@@ -119,7 +136,7 @@ const hasMatchingTime = barber.availabletimes?.some(
         {/* Avatar & Name */}
         <div className="flex flex-col items-center mb-4">
           <img
-            src={barber.avatar || "https://via.placeholder.com/100x100?text=Avatar"}
+            src={barber.avatar}
             alt="Barber Avatar"
             className="w-24 h-24 rounded-full border-4 border-blue-900 object-cover"
           />
@@ -244,32 +261,15 @@ const hasMatchingTime = barber.availabletimes?.some(
 
 const BarberList = ({ barbers}) => {
   const navigate = useNavigate();
-  const [go, setGo] = useState(false);
+ 
 
 
 
   return (
     <motion.div className="row pt-8" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
       {barbers.map((barber) => (
-        <BarberCard key={barber.id} barber={barber} setGo={setGo}  />
+        <BarberCard key={barber.id} barber={barber}   />
       ))}
-      {go && (
-        <motion.div
-          className="text-center mt-4 w-full"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="btn btn-primary w-2/3 h-16 text-lg"
-            onClick={() => navigate("/choosinghaircut")}
-          >
-            Davom etish
-          </motion.button>
-        </motion.div>
-      )}
     </motion.div>
   );
 };

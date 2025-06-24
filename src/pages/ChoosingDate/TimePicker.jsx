@@ -18,23 +18,17 @@ function TimePicker({
 
   const matchingTimeObjects = useMemo(() => {
     if (!formattedDate) return [];
-    if (selectedBarber) {
-      return selectedBarber.availabletimes?.filter(
-        (item) => 
-          item.date === formattedDate && item.is_booked === false
-      ) || [];
-    }
-    return availableTimes?.filter((item) => item.date === formattedDate) || [];
+    const source = selectedBarber?.availabletimes || availableTimes || [];
+    return source.filter(
+      (item) => item.date === formattedDate && !item.is_booked
+    );
   }, [selectedBarber, formattedDate, availableTimes]);
 
-  availableTimes.filter(
-    (t)=> 
-      t.barber === selectedBarber.id && 
-      new Date(t.date).toDateString() === new Date(selectedDate).toDateString() && !t.is_booked    )
-
   const handleTimeSelection = (timeObj) => {
+    if (!timeObj || !timeObj.id) return;
+
     setSelectedTime(timeObj);
-    setChoosenTime(timeObj);
+    setChoosenTime(timeObj); // sets global context version
 
     toast.success(`Vaqt tanlandi: ${timeObj.time}`, {
       action: {
@@ -42,16 +36,15 @@ function TimePicker({
         onClick: () => {
           if (!selectedBarber) {
             navigate("/choosingbarber");
-          } else if (selectedHaircut) {
-            navigate("/fillinginfopage");
-          } else {
+          } else if (!selectedHaircut) {
             navigate("/choosinghaircut");
+          } else {
+            navigate("/fillinginfopage");
           }
         },
       },
     });
   };
-console.log(selectedDate, selectedTime);
 
   return (
     <motion.div
@@ -60,14 +53,14 @@ console.log(selectedDate, selectedTime);
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-[#392d69] text-center">Aniq vaqtni tanlang</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-[#392d69] text-center">
+        Aniq vaqtni tanlang
+      </h2>
 
       {matchingTimeObjects.length > 0 ? (
         <motion.div
           key={formattedDate}
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full max-w-5xl"
-          initial="hidden"
-          animate="visible"
         >
           {matchingTimeObjects.map((timeObj, index) => (
             <motion.button
@@ -82,12 +75,14 @@ console.log(selectedDate, selectedTime);
               whileTap={{ scale: 0.95 }}
               layout
             >
-              {timeObj.time}
+              {timeObj.time.slice(0, 5)}
             </motion.button>
           ))}
         </motion.div>
       ) : (
-        <p className="text-gray-500 text-lg mt-6 text-center">Bu kunda mavjud vaqtlar yo‘q</p>
+        <p className="text-gray-500 text-lg mt-6 text-center">
+          Bu kunda mavjud vaqtlar yo‘q
+        </p>
       )}
 
       <motion.p
@@ -97,7 +92,9 @@ console.log(selectedDate, selectedTime);
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {selectedTime ? `Tanlangan vaqt: ${selectedTime.time}` : "Iltimos, vaqt tanlang"}
+        {selectedTime
+          ? `Tanlangan vaqt: ${selectedTime.time}`
+          : "Iltimos, vaqt tanlang"}
       </motion.p>
     </motion.div>
   );

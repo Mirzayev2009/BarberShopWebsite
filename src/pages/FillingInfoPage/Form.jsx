@@ -20,8 +20,7 @@ import { DatabaseContext } from "@/DataBase";
 const formSchema = z.object({
   name: z.string().min(5, { message: "Ism kamida 5 ta harfdan iborat bo'lishi kerak" }),
   phone: z.string().min(13, { message: "Telefon raqamni to'liq kiriting" }),
-  comment: z.string().optional(),
-});
+  comment: z.string().optional(),});
 
 export function PersonalInfoForm() {
   const navigate = useNavigate();
@@ -40,25 +39,36 @@ export function PersonalInfoForm() {
   const [smsCode, setSmsCode] = useState("");
   const [timer, setTimer] = useState(0);
   const [submittedPhone, setSubmittedPhone] = useState(null);
+  const timePickerRef = useRef(null)
   const intervalRef = useRef(null);
 
   // Cleanup timer on component unmount
-  useEffect(() => {
-    return () => clearInterval(intervalRef.current);
-  }, []);
+useEffect(() => {
+  if (showSMSInput) {
+    setTimeout(() => {
+      timePickerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100); // small delay to ensure it's rendered before scroll
+  }
 
-  const startTimer = () => {
-    setTimer(30);
-    clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      setTimer(prev => {
-        if (prev === 1) {
-          clearInterval(intervalRef.current);
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
+  return () => clearInterval(intervalRef.current);
+}, [showSMSInput]);
+
+
+
+const startTimer = () => {
+  setTimer(30);
+  clearInterval(intervalRef.current);
+  intervalRef.current = setInterval(() => {
+    setTimer(prev => {
+      if (prev === 1) {
+        clearInterval(intervalRef.current);
+      }
+      return prev - 1;
+    });
+  }, 1000);
+};
+
+
 
   const sendSMS = async (phone) => {
     try {
@@ -91,6 +101,7 @@ const verifyCode = async () => {
     if (res.ok) {
       const data = await res.json();
       localStorage.setItem("token", data.token); // 🔐 Token saqlanmoqda
+      setPersonalInfo(form.getValues())
       navigate("/finalpage");
     } else {
       alert("Kod noto‘g‘ri yoki vaqti tugagan.");
@@ -99,6 +110,9 @@ const verifyCode = async () => {
     console.error("Kodni tekshirishda xatolik:", err);
   }
 };
+
+console.log(localStorage.getItem("token"));
+
 
 
   const onSubmit = async (data) => {
@@ -168,7 +182,10 @@ const verifyCode = async () => {
       </Form>
 
       {showSMSInput && (
-        <div className="mt-6 p-4 border rounded-md bg-gray-50">
+        
+        <div
+        ref={timePickerRef} 
+        className="mt-6 p-4 border rounded-md bg-gray-50">
           <label className="block mb-2 text-sm font-medium text-gray-700">
             SMS Kodni kiriting:
           </label>

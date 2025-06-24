@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import Nav from "@/Nav";
 import { MyDatePicker } from "./calendar";
 import TimePicker from "./TimePicker";
@@ -12,16 +12,32 @@ const ChoosingDate = () => {
     selectedBarber,
     availableTimes,
     selectedHaircut,
+    selectedTime
   } = useContext(DatabaseContext);
 
   const [choosenTime, setChoosenTime] = useState(null);
   const [choosenDay, setChoosenDay] = useState(null);
 
-  // Sync local chosen date/time with global context
-  useEffect(() => {
-    if (choosenDay) setSelectedDate(choosenDay);
-    if (choosenTime) setSelectedTime(choosenTime);
-  }, [choosenDay, choosenTime, setSelectedDate, setSelectedTime]);
+ useEffect(() => {
+  if (choosenDay) {
+    setSelectedDate(choosenDay);
+
+    setTimeout(() => {
+      timePickerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100); // Small delay for better UX
+  }
+}, [choosenDay, setSelectedDate]);
+
+useEffect(() => {
+  if (choosenTime) {
+    setSelectedTime(choosenTime);
+  }
+}, [choosenTime, setSelectedTime]);
+
+  const timePickerRef = useRef(null)
+
+  console.log(selectedTime);
+  
 
   // Show loading while no available times
   if (!availableTimes || availableTimes.length === 0) {
@@ -63,13 +79,14 @@ const ChoosingDate = () => {
         transition={{ duration: 0.7 }}
       >
         {/* Date picker on left */}
-        <div className="w-full h-full shadow-md md:w-1/2 flex justify-center">
+        <div className="w-full h-full shadow-md md:w-1/2 flex justify-center mb-10">
           <MyDatePicker setChoosenDay={setChoosenDay} />
         </div>
 
         {/* Time picker on right, shows only if a date is chosen */}
         {choosenDay && (
           <motion.div
+            ref={timePickerRef}
             key={choosenDay.toISOString()} // ensures animation triggers when date changes
             className="w-full h-full shadow-md md:w-1/2 flex justify-center"
             initial={{ opacity: 0, x: 100 }}
