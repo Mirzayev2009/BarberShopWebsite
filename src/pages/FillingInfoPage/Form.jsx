@@ -72,7 +72,7 @@ const startTimer = () => {
 
   const sendSMS = async (phone) => {
     try {
-      const res = await fetch("http://192.168.1.61:8000/request-sms-code/", {
+      const res = await fetch("http://localhost:8000/request-sms-code/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone }),
@@ -92,7 +92,7 @@ const startTimer = () => {
 
 const verifyCode = async () => {
   try {
-    const res = await fetch("http://192.168.1.61:8000/verify-sms-code/", {
+    const res = await fetch("http://localhost:8000/verify-sms-code/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone: submittedPhone, code: smsCode }),

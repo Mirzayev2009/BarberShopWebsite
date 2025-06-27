@@ -23,7 +23,7 @@
     }, [bookingId]);
 
     // API URLs
-    const API_BASE = "http://192.168.1.61:8000";
+    const API_BASE = "http://localhost:8000";
     const URLS = {
       barbers: `${API_BASE}/barbers-list`,
       haircuts: `${API_BASE}/haircuts-list`,

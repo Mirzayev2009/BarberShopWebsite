@@ -103,7 +103,7 @@ const [loading, setLoading] = useState(false);
   }
 
   try{
-     const res = await fetch(`http://192.168.1.61:8000/bookings/`, {
+     const res = await fetch(`http://localhost/bookings/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -144,7 +144,7 @@ useEffect(() => {
   console.log("Booking useEffect: existingId =", existingId);
 
   if (existingId) {
-    fetch(`http://192.168.1.61:8000/bookings/${existingId}/`)
+    fetch(`http://localhost/bookings/${existingId}/`)
       .then((res) => {
         if (!res.ok) {
           console.log("Booking ID not valid anymore. Creating a new one.");
@@ -190,7 +190,7 @@ const updateBooking = async () => {
   };
 
   try {
-    const res = await fetch(`http://192.168.1.61:8000/bookings/${bookingId}/`, {
+    const res = await fetch(`http://localhost/bookings/${bookingId}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -220,7 +220,7 @@ const confirmUnbooking = async () => {
   if (!bookingId || !cancelReason) return;
 
   try {
-    const res = await fetch(`http://192.168.1.61:8000/bookings/${bookingId}/`, {
+    const res = await fetch(`http://localhost/bookings/${bookingId}/`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
